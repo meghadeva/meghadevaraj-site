@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Megha Devaraj | Project Portfolio Mockup</title>
+    <meta
+      name="description"
+      content="A personal portfolio mockup for Megha Devaraj featuring AddToGCal, CallYourBesties, LifeOSSetup, and CasePrepper.ai."
+    />
+    <style>
+      :root {
+        --cream: #f6efe7;
+        --paper: #fffaf6;
+        --paper-strong: #ffffff;
+        --ink: #302724;
+        --muted: #7b6d66;
+        --line: #e4d5ca;
+        --blush: #bf7a75;
+        --blush-soft: #f5dedb;
+        --rose: #d7aaa2;
+        --rose-soft: #f8e9e5;
+        --taupe: #9b7a67;
+        --taupe-soft: #eee2d6;
+        --plum: #82677a;
+        --plum-soft: #eee3ea;
+        --shadow: 0 18px 60px rgba(74, 54, 45, 0.1);
+        --shadow-small: 0 8px 28px rgba(74, 54, 45, 0.08);
+        --radius: 22px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 16% 14%, rgba(191, 122, 117, 0.18), transparent 28%),
+          radial-gradient(circle at 84% 18%, rgba(155, 122, 103, 0.16), transparent 30%),
+          linear-gradient(rgba(38, 37, 34, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(38, 37, 34, 0.03) 1px, transparent 1px),
+          var(--cream);
+        background-size: auto, auto, 36px 36px, 36px 36px, auto;
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page {
+        position: relative;
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      .blossoms {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        color: rgba(191, 122, 117, 0.2);
+        font-size: clamp(18px, 2.2vw, 34px);
+      }
+
+      .blossoms span {
+        position: absolute;
+        filter: blur(0.15px);
+        opacity: 0.44;
+        transform: rotate(var(--r));
+      }
+
+      .blossoms span:nth-child(1) {
+        left: 7%;
+        top: 18%;
+        --r: -18deg;
+      }
+
+      .blossoms span:nth-child(2) {
+        left: 88%;
+        top: 16%;
+        --r: 20deg;
+      }
+
+      .blossoms span:nth-child(3) {
+        left: 76%;
+        top: 48%;
+        --r: -10deg;
+      }
+
+      .blossoms span:nth-child(4) {
+        left: 11%;
+        top: 72%;
+        --r: 14deg;
+      }
+
+      .blossoms span:nth-child(5) {
+        left: 48%;
+        top: 10%;
+        --r: 8deg;
+      }
+
+      .blossoms span:nth-child(6) {
+        left: 58%;
+        top: 86%;
+        --r: -22deg;
+      }
+
+      header,
+      main,
+      footer {
+        position: relative;
+        z-index: 1;
+      }
+
+      .shell {
+        width: min(1220px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid rgba(38, 37, 34, 0.1);
+        background: rgba(248, 243, 234, 0.82);
+        backdrop-filter: blur(18px);
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 18px 0;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--blush);
+        letter-spacing: -0.02em;
+      }
+
+      .brand .flower {
+        font-size: 18px;
+        opacity: 0.8;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .nav-links a {
+        border-radius: 999px;
+        padding: 8px 12px;
+      }
+
+      .nav-links a:hover {
+        background: rgba(255, 255, 255, 0.7);
+        color: var(--ink);
+      }
+
+      .connect {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(191, 122, 117, 0.34);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.58);
+        padding: 9px 13px;
+        color: var(--blush);
+        font-size: 14px;
+        font-weight: 650;
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .social-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 42px;
+        height: 38px;
+        border: 1px solid rgba(191, 122, 117, 0.24);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.52);
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .social-link:hover,
+      .connect:hover {
+        border-color: rgba(191, 122, 117, 0.42);
+        background: rgba(255, 250, 246, 0.86);
+        color: var(--blush);
+      }
+
+      main {
+        padding: 46px 0 28px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 0.86fr 1.22fr;
+        gap: 42px;
+        align-items: center;
+      }
+
+      .intro-card {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255, 253, 250, 0.9);
+        padding: 18px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .intro-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 20% 10%, rgba(63, 111, 80, 0.12), transparent 32%),
+          radial-gradient(circle at 82% 20%, rgba(191, 122, 117, 0.12), transparent 28%),
+          linear-gradient(120deg, rgba(255, 255, 255, 0.5), transparent 45%);
+        pointer-events: none;
+      }
+
+      .intro-content {
+        position: relative;
+        display: grid;
+        justify-items: start;
+        gap: 22px;
+      }
+
+      .portrait-wrap {
+        position: relative;
+        overflow: hidden;
+        width: min(230px, 72vw);
+        aspect-ratio: 1;
+        justify-self: center;
+        margin-top: 8px;
+        border: 8px solid rgba(255, 250, 246, 0.95);
+        border-radius: 42% 58% 48% 52% / 50% 44% 56% 50%;
+        background: var(--blush-soft);
+        box-shadow:
+          0 0 0 1px rgba(191, 122, 117, 0.22),
+          0 18px 45px rgba(74, 54, 45, 0.16);
+      }
+
+      .portrait-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 35%;
+        filter: saturate(0.95) contrast(0.98);
+      }
+
+      .portrait-wrap::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+        pointer-events: none;
+      }
+
+      .intro-copy {
+        padding: 0 16px 14px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        border: 1px solid rgba(191, 122, 117, 0.22);
+        border-radius: 999px;
+        background: var(--blush-soft);
+        padding: 6px 10px;
+        color: var(--blush);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(46px, 6vw, 78px);
+        line-height: 0.96;
+        letter-spacing: -0.055em;
+      }
+
+      .tagline {
+        margin: 18px 0 0;
+        padding-left: 18px;
+        border-left: 3px solid rgba(191, 122, 117, 0.32);
+        color: var(--blush);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 24px;
+        font-style: italic;
+        font-weight: 500;
+        line-height: 1.32;
+      }
+
+      .intro {
+        max-width: 520px;
+        margin: 20px 0 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.75;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 12px;
+        padding: 12px 15px;
+        font-size: 14px;
+        font-weight: 750;
+      }
+
+      .button.primary {
+        background: var(--ink);
+        color: var(--cream);
+      }
+
+      .button.secondary {
+        border: 1px solid var(--line);
+        background: rgba(255, 250, 246, 0.72);
+        color: var(--ink);
+      }
+
+      .project-stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .project-card {
+        display: grid;
+        grid-template-columns: 84px 1fr auto;
+        gap: 18px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background:
+          linear-gradient(110deg, rgba(255, 255, 255, 0.72), transparent 40%),
+          rgba(255, 253, 250, 0.88);
+        padding: 15px;
+        box-shadow: var(--shadow-small);
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      .project-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(191, 122, 117, 0.34);
+        box-shadow: var(--shadow);
+      }
+
+      .project-art {
+        display: grid;
+        width: 84px;
+        height: 84px;
+        place-items: center;
+        border-radius: 16px;
+        font-size: 30px;
+        font-weight: 800;
+      }
+
+      .project-card.calendar .project-art {
+        background: var(--taupe-soft);
+        color: var(--taupe);
+      }
+
+      .project-card.besties .project-art {
+        background: var(--blush-soft);
+        color: var(--blush);
+      }
+
+      .project-card.lifeos .project-art {
+        background: var(--rose-soft);
+        color: var(--taupe);
+      }
+
+      .project-card.case .project-art {
+        background: var(--plum-soft);
+        color: var(--plum);
+      }
+
+      .project-meta {
+        min-width: 0;
+      }
+
+      .label-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 8px;
+      }
+
+      .status {
+        border-radius: 999px;
+        padding: 4px 9px;
+        font-size: 12px;
+        font-weight: 750;
+      }
+
+      .status.live {
+        background: var(--taupe-soft);
+        color: var(--taupe);
+      }
+
+      .status.beta {
+        background: var(--blush-soft);
+        color: var(--blush);
+      }
+
+      .status.practice {
+        background: var(--plum-soft);
+        color: var(--plum);
+      }
+
+      .status.system {
+        background: var(--rose-soft);
+        color: var(--taupe);
+      }
+
+      .domain {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      h2 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 28px;
+        line-height: 1.05;
+        letter-spacing: -0.035em;
+      }
+
+      .project-card p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .open {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        color: var(--muted);
+      }
+
+      .section-title {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 24px;
+        align-items: end;
+        margin: 76px 0 20px;
+      }
+
+      .section-title h2 {
+        font-size: 38px;
+      }
+
+      .section-title p {
+        max-width: 440px;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .prompt-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      .prompt-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 253, 250, 0.86);
+        padding: 20px;
+        box-shadow: var(--shadow-small);
+      }
+
+      .prompt-card::after {
+        content: "";
+        position: absolute;
+        right: -34px;
+        top: -34px;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: rgba(191, 122, 117, 0.1);
+      }
+
+      .prompt-card .mini-icon {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        margin-bottom: 16px;
+        border-radius: 12px;
+        font-size: 20px;
+      }
+
+      .prompt-card:nth-child(1) .mini-icon {
+        background: var(--taupe-soft);
+        color: var(--taupe);
+      }
+
+      .prompt-card:nth-child(2) .mini-icon {
+        background: var(--blush-soft);
+        color: var(--blush);
+      }
+
+      .prompt-card:nth-child(3) .mini-icon {
+        background: var(--plum-soft);
+        color: var(--plum);
+      }
+
+      .prompt-card h3 {
+        position: relative;
+        margin: 0;
+        font-size: 17px;
+      }
+
+      .prompt-card p {
+        position: relative;
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      footer {
+        margin-top: 70px;
+        border-top: 1px solid rgba(38, 37, 34, 0.1);
+        padding: 24px 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .footer-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      @media (max-width: 900px) {
+        .hero,
+        .prompt-grid,
+        .section-title {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .project-card {
+          grid-template-columns: 64px 1fr;
+        }
+
+        .project-art {
+          width: 64px;
+          height: 64px;
+          border-radius: 14px;
+          font-size: 24px;
+        }
+
+        .portrait-wrap {
+          width: min(210px, 68vw);
+        }
+
+        .open {
+          display: none;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .shell {
+          width: min(100% - 28px, 1180px);
+        }
+
+        main {
+          padding-top: 28px;
+        }
+
+        .intro-card {
+          padding: 12px;
+        }
+
+        .intro-copy {
+          padding: 4px 12px 14px;
+        }
+
+        .project-card {
+          gap: 12px;
+          padding: 12px;
+        }
+
+        h2 {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="shell nav">
+          <a class="brand" href="#"><span>meghadevaraj.com</span><span class="flower">🌸</span></a>
+          <nav class="nav-links" aria-label="Primary">
+            <a href="#projects">Projects</a>
+            <a href="#prompts">Prompts</a>
+            <a href="#contact">Contact</a>
+          </nav>
+          <div class="top-actions">
+            <a class="social-link" href="https://www.linkedin.com/in/megha-devaraj" aria-label="LinkedIn">in</a>
+            <a class="social-link" href="https://github.com/meghadeva/meghadevaraj-site" aria-label="GitHub repository">GH</a>
+            <a class="connect" href="mailto:megha@meghadevaraj.com">✉ Let's connect</a>
+          </div>
+        </div>
+      </header>
+
+      <div class="blossoms" aria-hidden="true">
+        <span>🌸</span>
+        <span>🌸</span>
+        <span>🌸</span>
+        <span>🌸</span>
+        <span>🌸</span>
+        <span>🌸</span>
+      </div>
+
+      <main class="shell">
+        <section class="hero" aria-labelledby="page-title">
+          <div class="intro-card">
+            <div class="intro-content">
+              <div class="portrait-wrap">
+                <img src="assets/megha-profile.jpg" alt="Portrait of Megha Devaraj" />
+              </div>
+              <div class="intro-copy">
+                <div class="eyebrow">✦ functional project portfolio</div>
+                <h1 id="page-title">Megha Devaraj</h1>
+                <p class="tagline">“Build the thing you keep wishing existed.”</p>
+                <p class="intro">
+                  Hi, I’m Megha. I like turning the tiny annoyances in my own life
+                  into tools I can actually use: faster calendar entry, healthier
+                  long-distance friendships, calmer life systems, and better ways to
+                  practice hard things.
+                </p>
+                <div class="hero-actions">
+                  <a class="button primary" href="#projects">View projects →</a>
+                  <a class="button secondary" href="#prompts">Favorite prompts →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="projects" class="project-stack" aria-label="Featured projects">
+            <a class="project-card calendar" href="https://addtogcal.com">
+              <div class="project-art" aria-hidden="true">📅</div>
+              <div class="project-meta">
+                <div class="label-row">
+                  <span class="status live">Functional</span>
+                  <span class="domain">AddToGCal.com</span>
+                </div>
+                <h2>AddToGCal</h2>
+                <p>
+                  Natural-language calendar entry with smart memory, so quick text
+                  like “tennis tomorrow at 7” can become a structured event that
+                  remembers your usual patterns.
+                </p>
+              </div>
+              <span class="open" aria-hidden="true">↗</span>
+            </a>
+
+            <a class="project-card besties" href="https://callyourbesties.com">
+              <div class="project-art" aria-hidden="true">☎</div>
+              <div class="project-meta">
+                <div class="label-row">
+                  <span class="status beta">In development</span>
+                  <span class="domain">CallYourBesties.com</span>
+                </div>
+                <h2>Call Your Besties</h2>
+                <p>
+                  A friendship care tool for keeping long-distance best-friendships
+                  healthy through thoughtful reminders and lightweight check-ins.
+                </p>
+              </div>
+              <span class="open" aria-hidden="true">↗</span>
+            </a>
+
+            <a class="project-card lifeos" href="https://lifeossetup.com">
+              <div class="project-art" aria-hidden="true">🗂</div>
+              <div class="project-meta">
+                <div class="label-row">
+                  <span class="status system">Functional</span>
+                  <span class="domain">LifeOSSetup.com</span>
+                </div>
+                <h2>LifeOS Setup</h2>
+                <p>
+                  A guided setup to help people use Claude to organize life admin,
+                  goals, routines, and personal systems into a calmer operating system.
+                </p>
+              </div>
+              <span class="open" aria-hidden="true">↗</span>
+            </a>
+
+            <a class="project-card case" href="https://caseprepper.ai">
+              <div class="project-art" aria-hidden="true">💬</div>
+              <div class="project-meta">
+                <div class="label-row">
+                  <span class="status practice">In development</span>
+                  <span class="domain">CasePrepper.ai</span>
+                </div>
+                <h2>CasePrepper.ai</h2>
+                <p>
+                  AI-powered case interview practice for getting low-pressure reps,
+                  feedback, and targeted improvement areas.
+                </p>
+              </div>
+              <span class="open" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
+
+        <section id="prompts" aria-labelledby="prompts-title">
+          <div class="section-title">
+            <div>
+              <div class="eyebrow">prompt shelf</div>
+              <h2 id="prompts-title">My favorite prompts.</h2>
+            </div>
+            <p>
+              A few prompt patterns I come back to when I’m shaping products from
+              fuzzy annoyance into something specific enough to build.
+            </p>
+          </div>
+
+          <div class="prompt-grid">
+            <article class="prompt-card">
+              <div class="mini-icon" aria-hidden="true">↳</div>
+              <h3>Turn friction into a product brief</h3>
+              <p>
+                “Here is an annoying recurring moment in my life. Ask me clarifying
+                questions, then turn it into a tiny product spec.”
+              </p>
+            </article>
+            <article class="prompt-card">
+              <div class="mini-icon" aria-hidden="true">♡</div>
+              <h3>Design for the emotional job</h3>
+              <p>
+                “What is the user trying to feel less of? What are they trying to
+                feel more of? Design the first screen around that.”
+              </p>
+            </article>
+            <article class="prompt-card">
+              <div class="mini-icon" aria-hidden="true">✦</div>
+              <h3>Make the next version obvious</h3>
+              <p>
+                “Review this prototype like a sharp product friend. What is confusing,
+                what is promising, and what should I improve next?”
+              </p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer id="contact">
+        <div class="shell footer-row">
+          <span>© 2026 Megha Devaraj</span>
+          <span>Based in San Francisco, CA</span>
+          <a href="mailto:megha@meghadevaraj.com">megha@meghadevaraj.com</a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
