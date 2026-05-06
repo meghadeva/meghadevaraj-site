@@ -293,7 +293,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 42px;
+        width: 42px;
         height: 38px;
         border: 1px solid rgba(191, 122, 117, 0.24);
         border-radius: 10px;
@@ -301,6 +301,18 @@
         color: var(--muted);
         font-size: 13px;
         font-weight: 800;
+      }
+
+      .social-link img {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .connect {
+        width: 42px;
+        justify-content: center;
+        padding-inline: 0;
       }
 
       .social-link:hover,
@@ -615,70 +627,101 @@
         line-height: 1.7;
       }
 
-      .prompt-grid {
+      .timeline {
+        position: relative;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
+        gap: 18px;
+        margin-top: 8px;
       }
 
-      .prompt-card {
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 33px;
+        top: 34px;
+        bottom: 34px;
+        width: 2px;
+        background: linear-gradient(var(--blush), var(--taupe), var(--plum));
+        opacity: 0.24;
+      }
+
+      .timeline-item {
+        position: relative;
+        display: grid;
+        grid-template-columns: 68px 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .timeline-logo {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        width: 68px;
+        height: 68px;
+        place-items: center;
+        overflow: hidden;
+        border: 1px solid rgba(191, 122, 117, 0.2);
+        border-radius: 18px;
+        background: rgba(255, 250, 246, 0.9);
+        box-shadow: var(--shadow-small);
+        padding: 10px;
+      }
+
+      .timeline-logo img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+
+      .timeline-card {
         position: relative;
         overflow: hidden;
         border: 1px solid var(--line);
         border-radius: 18px;
-        background: rgba(255, 253, 250, 0.86);
+        background:
+          linear-gradient(110deg, rgba(255, 255, 255, 0.72), transparent 42%),
+          rgba(255, 253, 250, 0.88);
         padding: 20px;
         box-shadow: var(--shadow-small);
       }
 
-      .prompt-card::after {
-        content: "";
+      .timeline-card::after {
+        content: "🌸";
         position: absolute;
-        right: -34px;
-        top: -34px;
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        background: rgba(191, 122, 117, 0.1);
+        right: 18px;
+        top: 14px;
+        color: rgba(191, 122, 117, 0.22);
+        font-size: 24px;
       }
 
-      .prompt-card .mini-icon {
-        display: grid;
-        width: 42px;
-        height: 42px;
-        place-items: center;
-        margin-bottom: 16px;
-        border-radius: 12px;
-        font-size: 20px;
-      }
-
-      .prompt-card:nth-child(1) .mini-icon {
-        background: var(--taupe-soft);
-        color: var(--taupe);
-      }
-
-      .prompt-card:nth-child(2) .mini-icon {
+      .timeline-date {
+        display: inline-flex;
+        margin-bottom: 9px;
+        border-radius: 999px;
         background: var(--blush-soft);
+        padding: 5px 10px;
         color: var(--blush);
+        font-size: 12px;
+        font-weight: 800;
       }
 
-      .prompt-card:nth-child(3) .mini-icon {
-        background: var(--plum-soft);
-        color: var(--plum);
-      }
-
-      .prompt-card h3 {
+      .timeline-card h3 {
         position: relative;
         margin: 0;
-        font-size: 17px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 26px;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
       }
 
-      .prompt-card p {
+      .timeline-card p {
         position: relative;
+        max-width: 850px;
         margin: 10px 0 0;
         color: var(--muted);
-        font-size: 14px;
-        line-height: 1.65;
+        font-size: 15px;
+        line-height: 1.7;
       }
 
       footer {
@@ -698,7 +741,6 @@
 
       @media (max-width: 900px) {
         .hero,
-        .prompt-grid,
         .section-title {
           grid-template-columns: 1fr;
         }
@@ -727,6 +769,22 @@
 
         .open {
           display: none;
+        }
+
+        .timeline::before {
+          left: 27px;
+        }
+
+        .timeline-item {
+          grid-template-columns: 56px 1fr;
+          gap: 14px;
+        }
+
+        .timeline-logo {
+          width: 56px;
+          height: 56px;
+          border-radius: 16px;
+          padding: 8px;
         }
       }
 
@@ -765,13 +823,17 @@
           <a class="brand" href="#"><span>meghadevaraj.com</span><span class="flower">🌸</span></a>
           <nav class="nav-links" aria-label="Primary">
             <a href="#projects">Projects</a>
-            <a href="#prompts">Prompts</a>
+            <a href="#journey">Journey</a>
             <a href="#contact">Contact</a>
           </nav>
           <div class="top-actions">
-            <a class="social-link" href="https://www.linkedin.com/in/megha-devaraj" aria-label="LinkedIn">in</a>
-            <a class="social-link" href="https://github.com/meghadeva/meghadevaraj-site" aria-label="GitHub repository">GH</a>
-            <a class="connect" href="mailto:megha@meghadevaraj.com">✉ Let's connect</a>
+            <a class="social-link" href="https://www.linkedin.com/in/megha-devaraj" aria-label="LinkedIn">
+              <img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" alt="" />
+            </a>
+            <a class="social-link" href="https://github.com/meghadeva/meghadevaraj-site" aria-label="GitHub repository">
+              <img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" alt="" />
+            </a>
+            <a class="connect" href="mailto:megha@meghadevaraj.com" aria-label="Email Megha">✉</a>
           </div>
         </div>
       </header>
@@ -809,14 +871,18 @@
                 <h1 id="page-title">Megha Devaraj</h1>
                 <p class="tagline">“Build the thing you keep wishing existed.”</p>
                 <p class="intro">
-                  Hi, I’m Megha. I like turning the tiny annoyances in my own life
-                  into tools I can actually use: faster calendar entry, healthier
-                  long-distance friendships, calmer life systems, and better ways to
-                  practice hard things.
+                  Hi, I’m Megha. I build small, practical tools for the things I
+                  keep wishing existed — faster calendar entry, better long-distance
+                  friendships, calmer life systems, and smarter ways to practice hard
+                  things.
+                </p>
+                <p class="intro">
+                  I’m especially interested in AI as a personal operating layer: not
+                  just chatbots, but tools that make everyday life feel lighter.
                 </p>
                 <div class="hero-actions">
                   <a class="button primary" href="#projects">View projects →</a>
-                  <a class="button secondary" href="#prompts">Favorite prompts →</a>
+                  <a class="button secondary" href="#journey">Journey so far →</a>
                 </div>
               </div>
             </div>
@@ -832,9 +898,9 @@
                 </div>
                 <h2>AddToGCal</h2>
                 <p>
-                  Natural-language calendar entry with smart memory, so quick text
-                  like “tennis tomorrow at 7” can become a structured event that
-                  remembers your usual patterns.
+                  Natural-language calendar entry that turns quick text like “tennis
+                  tomorrow at 7” into a structured event — with memory for your usual
+                  categories, locations, and routines.
                 </p>
               </div>
               <span class="open">Visit AddToGCal.com →</span>
@@ -849,8 +915,9 @@
                 </div>
                 <h2>Call Your Besties</h2>
                 <p>
-                  A friendship care tool for keeping long-distance best-friendships
-                  healthy through thoughtful reminders and lightweight check-ins.
+                  A friendship care tool for staying close to long-distance best
+                  friends through thoughtful reminders, lightweight check-ins, and
+                  tiny nudges that make connection easier.
                 </p>
               </div>
               <span class="open">Visit CallYourBesties.com →</span>
@@ -865,8 +932,9 @@
                 </div>
                 <h2>LifeOS Setup</h2>
                 <p>
-                  A guided setup to help people use Claude to organize life admin,
-                  goals, routines, and personal systems into a calmer operating system.
+                  A concierge-style setup service that helps people use AI to organize
+                  life admin, goals, routines, projects, and personal knowledge into a
+                  calmer operating system.
                 </p>
               </div>
               <span class="open">Open LifeOSSetup.com →</span>
@@ -882,7 +950,8 @@
                 <h2>CasePrepper.ai</h2>
                 <p>
                   AI-powered case interview practice for getting low-pressure reps,
-                  feedback, and targeted improvement areas.
+                  structured feedback, and targeted improvement areas before consulting
+                  recruiting begins.
                 </p>
               </div>
               <span class="open">Visit CasePrepper.ai →</span>
@@ -890,42 +959,62 @@
           </div>
         </section>
 
-        <section id="prompts" aria-labelledby="prompts-title">
+        <section id="journey" aria-labelledby="journey-title">
           <div class="section-title">
             <div>
-              <div class="eyebrow">prompt shelf</div>
-              <h2 id="prompts-title">My favorite prompts.</h2>
+              <div class="eyebrow">timeline</div>
+              <h2 id="journey-title">The journey so far.</h2>
             </div>
             <p>
-              A few prompt patterns I come back to when I’m shaping products from
-              fuzzy annoyance into something specific enough to build.
+              A few chapters that shaped how I think about engineering, community,
+              products, and the kinds of tools I want to build next.
             </p>
           </div>
 
-          <div class="prompt-grid">
-            <article class="prompt-card">
-              <div class="mini-icon" aria-hidden="true">↳</div>
-              <h3>Turn friction into a product brief</h3>
-              <p>
-                “Here is an annoying recurring moment in my life. Ask me clarifying
-                questions, then turn it into a tiny product spec.”
-              </p>
+          <div class="timeline">
+            <article class="timeline-item">
+              <div class="timeline-logo">
+                <img src="https://www.google.com/s2/favicons?domain=nd.edu&sz=128" alt="Notre Dame logo" />
+              </div>
+              <div class="timeline-card">
+                <span class="timeline-date">Class of 2021</span>
+                <h3>Notre Dame</h3>
+                <p>
+                  Studied computer science, taught as a TA, danced with SASA, and
+                  helped grow the South Asian student community from a small group
+                  into a real home base.
+                </p>
+              </div>
             </article>
-            <article class="prompt-card">
-              <div class="mini-icon" aria-hidden="true">♡</div>
-              <h3>Design for the emotional job</h3>
-              <p>
-                “What is the user trying to feel less of? What are they trying to
-                feel more of? Design the first screen around that.”
-              </p>
+
+            <article class="timeline-item">
+              <div class="timeline-logo">
+                <img src="https://www.google.com/s2/favicons?domain=microsoft.com&sz=128" alt="Microsoft logo" />
+              </div>
+              <div class="timeline-card">
+                <span class="timeline-date">2021 - 2026</span>
+                <h3>Microsoft</h3>
+                <p>
+                  Built and supported Azure SQL live-site tools used by engineers
+                  during production incidents. Learned how to turn messy operational
+                  problems into clearer systems, better tooling, and calmer workflows.
+                </p>
+              </div>
             </article>
-            <article class="prompt-card">
-              <div class="mini-icon" aria-hidden="true">✦</div>
-              <h3>Make the next version obvious</h3>
-              <p>
-                “Review this prototype like a sharp product friend. What is confusing,
-                what is promising, and what should I improve next?”
-              </p>
+
+            <article class="timeline-item">
+              <div class="timeline-logo">
+                <img src="https://www.google.com/s2/favicons?domain=upenn.edu&sz=128" alt="Wharton logo" />
+              </div>
+              <div class="timeline-card">
+                <span class="timeline-date">Class of 2028</span>
+                <h3>Wharton</h3>
+                <p>
+                  Starting my MBA to sharpen the product, strategy, and company-building
+                  side of my work — especially around AI, consumer tools, and products
+                  that help people live better.
+                </p>
+              </div>
             </article>
           </div>
         </section>
