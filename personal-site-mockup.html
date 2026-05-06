@@ -481,13 +481,25 @@
       }
 
       .open {
-        display: grid;
-        width: 38px;
-        height: 38px;
-        place-items: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-width: max-content;
         border: 1px solid var(--line);
-        border-radius: 50%;
-        color: var(--muted);
+        border-radius: 999px;
+        background: rgba(255, 250, 246, 0.72);
+        padding: 9px 12px;
+        color: var(--blush);
+        font-size: 13px;
+        font-weight: 800;
+        box-shadow: 0 5px 16px rgba(74, 54, 45, 0.045);
+      }
+
+      .project-card:hover .open {
+        border-color: rgba(191, 122, 117, 0.36);
+        background: var(--blush-soft);
+        color: var(--ink);
       }
 
       .section-title {
@@ -598,7 +610,10 @@
         }
 
         .nav-links {
-          display: none;
+          display: inline-flex;
+          grid-column: 2;
+          justify-self: start;
+          margin-top: 2px;
         }
 
         .project-card {
@@ -716,7 +731,7 @@
                   remembers your usual patterns.
                 </p>
               </div>
-              <span class="open" aria-hidden="true">↗</span>
+              <span class="open">Visit AddToGCal.com →</span>
             </a>
 
             <a class="project-card besties" href="https://callyourbesties.com">
@@ -732,7 +747,7 @@
                   healthy through thoughtful reminders and lightweight check-ins.
                 </p>
               </div>
-              <span class="open" aria-hidden="true">↗</span>
+              <span class="open">Visit CallYourBesties.com →</span>
             </a>
 
             <a class="project-card lifeos" href="https://lifeossetup.com">
@@ -748,7 +763,7 @@
                   goals, routines, and personal systems into a calmer operating system.
                 </p>
               </div>
-              <span class="open" aria-hidden="true">↗</span>
+              <span class="open">Open LifeOSSetup.com →</span>
             </a>
 
             <a class="project-card case" href="https://caseprepper.ai">
@@ -764,7 +779,7 @@
                   feedback, and targeted improvement areas.
                 </p>
               </div>
-              <span class="open" aria-hidden="true">↗</span>
+              <span class="open">Visit CasePrepper.ai →</span>
             </a>
           </div>
         </section>
