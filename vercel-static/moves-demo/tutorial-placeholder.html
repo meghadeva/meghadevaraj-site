@@ -143,7 +143,7 @@ body{font-family:var(--font-main);background:#E8E4DD;min-height:100vh;display:fl
 .congrats-body{font-size:14px;color:var(--gray-500);line-height:1.7;margin-bottom:28px;}
 .congrats-cta{display:block;width:100%;padding:14px;background:var(--purple);color:white;border:none;border-radius:var(--r-md);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font-main);text-decoration:none;margin-bottom:10px;}
 .congrats-secondary{font-size:13px;color:var(--gray-400);cursor:pointer;}
-body.embedded{padding:10px 16px 24px;zoom:.58;}
+body.embedded{padding:10px 16px 24px;zoom:.82;}
 body.embedded .progress-wrap{margin-bottom:10px;}
 @media(max-width:700px){body.embedded{zoom:.82;}}
 </style>
@@ -1027,6 +1027,11 @@ function getActivityTitle(id){
 }
 
 function openFullDemo(){
+  if(window.parent&&window.parent!==window){
+    window.parent.postMessage({type:'moves-demo:set-tab',tab:'user'},window.location.origin);
+    return;
+  }
+
   // Pass user-entered data as URL params so the full demo can pre-populate
   const params=new URLSearchParams({
     name: userName||'',
@@ -1034,7 +1039,7 @@ function openFullDemo(){
     friends: groupFriends.filter(f=>f!==addedMember).join(','),
     oneonone: oneoneName||''
   });
-  window.open('moves_demo.html?'+params.toString(),'_blank');
+  window.location.href='/moves-demo/user-view.html?'+params.toString();
 }
 
 function unlockGroupExplore(){

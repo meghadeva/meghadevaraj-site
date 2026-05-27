@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   BookOpenCheck,
@@ -38,6 +38,21 @@ export function MovesDemoConsole() {
   const [activeDemo, setActiveDemo] = useState<DemoKey>("overview");
   const active = demos[activeDemo];
   const ActiveIcon = active.icon;
+
+  useEffect(() => {
+    const handleDemoMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+
+      if (event.data?.type === "moves-demo:set-tab" && event.data?.tab === "user") {
+        setActiveDemo("user");
+      }
+    };
+
+    window.addEventListener("message", handleDemoMessage);
+    return () => window.removeEventListener("message", handleDemoMessage);
+  }, []);
 
   return (
     <main className="min-h-screen bg-[#ece6dc] text-[#1c1a17]">
