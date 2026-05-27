@@ -186,9 +186,17 @@ body{font-family:var(--font-main);background:#E8E4DD;min-height:100vh;display:fl
 
 select{font-family:var(--font-main);}
 label{font-size:12px;color:var(--gray-500);font-weight:500;display:block;margin-bottom:4px;}
+body.embedded{padding:10px 16px 24px;zoom:.58;}
+body.embedded .page-header{margin-bottom:14px;}
+body.embedded .demo-note{margin:-2px 0 10px;}
+body.embedded .user-bar{margin-bottom:14px;}
+@media(max-width:700px){body.embedded{zoom:.82;}}
 </style>
 </head>
 <body>
+<script>
+if(new URLSearchParams(window.location.search).has('embedded'))document.body.classList.add('embedded');
+</script>
 
 <div class="page-header">
   <div class="page-logo">mo<span>v</span>es</div>

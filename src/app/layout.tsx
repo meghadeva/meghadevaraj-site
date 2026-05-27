@@ -25,6 +25,11 @@ export const metadata: Metadata = {
   description:
     "Personal portfolio of Megha Devaraj: projects, AI experiments, work, education, and creative demos.",
   metadataBase: new URL("https://meghadevaraj.com"),
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
   openGraph: {
     title: "Megha Devaraj",
     description:
