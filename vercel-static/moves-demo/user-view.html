@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>moves — demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple:#7C6FF7; --purple-light:#EEEDff; --purple-mid:#C4C0FC;
+  --green:#1DB97A; --green-light:#E0F7EE;
+  --red:#F04E4E; --red-light:#FDEAEA;
+  --amber:#F5A623; --amber-light:#FEF3DC;
+  --teal:#0EADA8; --teal-light:#E0F5F5;
+  --gray-50:#F8F7F5; --gray-100:#F0EEE9; --gray-200:#E2DED6;
+  --gray-300:#C8C3B8; --gray-500:#8A857A; --gray-700:#4A4540; --gray-900:#1C1A17;
+  --white:#FFFFFF;
+  --font-main:'DM Sans',sans-serif; --font-display:'DM Serif Display',serif;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.06); --shadow-md:0 4px 12px rgba(0,0,0,0.08); --shadow-lg:0 12px 32px rgba(0,0,0,0.12);
+  --r-sm:8px; --r-md:12px; --r-lg:18px; --r-xl:24px; --r-full:9999px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--font-main);background:#E8E4DD;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px 48px;
+  background-image:radial-gradient(circle at 20% 20%,rgba(124,111,247,0.08) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(29,185,122,0.06) 0%,transparent 50%);}
+.page-header{text-align:center;margin-bottom:24px;}
+.page-logo{font-family:var(--font-display);font-size:36px;color:var(--gray-900);letter-spacing:-1px;margin-bottom:4px;}
+.page-logo span{color:var(--purple);font-style:italic;}
+.page-tagline{font-size:14px;color:var(--gray-500);font-weight:300;}
+.beta-badge{display:inline-block;background:var(--purple-light);color:var(--purple);font-size:11px;font-weight:600;padding:3px 10px;border-radius:var(--r-full);letter-spacing:.5px;text-transform:uppercase;margin-top:8px;}
+.demo-note{width:390px;max-width:100%;background:var(--purple-light);border:1px solid var(--purple-mid);color:var(--gray-700);border-radius:var(--r-lg);padding:12px 14px;margin:-8px 0 14px;font-size:13px;line-height:1.55;box-shadow:var(--shadow-sm);}
+.demo-note strong{color:var(--gray-900);}
+.user-bar{display:flex;align-items:center;gap:10px;background:var(--white);border-radius:var(--r-full);padding:8px 16px;margin-bottom:20px;box-shadow:var(--shadow-sm);font-size:14px;color:var(--gray-500);}
+.user-bar select{font-family:var(--font-main);font-size:15px;font-weight:500;color:var(--gray-900);border:none;background:transparent;cursor:pointer;outline:none;appearance:none;padding-right:20px;}
+.user-bar-arrow{color:var(--gray-300);font-size:12px;margin-left:-16px;pointer-events:none;}
+
+.phone-frame{width:390px;max-width:100%;height:780px;background:var(--white);border-radius:44px;box-shadow:var(--shadow-lg),0 0 0 8px #D4D0C8,0 0 0 10px #C8C4BC;overflow:hidden;position:relative;display:flex;flex-direction:column;}
+.status-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 4px;font-size:12px;font-weight:500;color:var(--gray-700);flex-shrink:0;}
+.dynamic-island{width:120px;height:34px;background:var(--gray-900);border-radius:var(--r-full);position:absolute;top:10px;left:50%;transform:translateX(-50%);}
+.app-header{padding:10px 20px 0;border-bottom:1px solid var(--gray-100);flex-shrink:0;}
+.app-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.app-logo{font-family:var(--font-display);font-size:26px;color:var(--gray-900);letter-spacing:-.5px;}
+.app-logo em{color:var(--purple);font-style:italic;}
+.notif-btn{width:36px;height:36px;border-radius:var(--r-full);background:var(--gray-50);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;border:1px solid var(--gray-200);position:relative;}
+.notif-dot{width:8px;height:8px;background:var(--red);border-radius:50%;position:absolute;top:6px;right:6px;border:1.5px solid var(--white);}
+.tab-row{display:flex;gap:4px;}
+.tab{flex:1;padding:8px 4px;text-align:center;font-size:13px;color:var(--gray-500);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;user-select:none;}
+.tab.active{color:var(--purple);border-bottom-color:var(--purple);font-weight:500;}
+
+.content-area{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 16px 12px;-webkit-overflow-scrolling:touch;}
+.content-area::-webkit-scrollbar{display:none;}
+.bottom-nav{display:flex;border-top:1px solid var(--gray-100);padding:10px 0 20px;background:var(--white);flex-shrink:0;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--gray-300);font-size:10px;font-weight:500;transition:color .15s;user-select:none;}
+.nav-item.active{color:var(--purple);}
+.nav-icon{font-size:22px;line-height:1;}
+
+.sec-label{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;margin-top:4px;}
+.card{background:var(--white);border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all .12s;box-shadow:var(--shadow-sm);}
+.card:hover{background:var(--gray-50);}
+.card:active{transform:scale(.98);}
+.card-row{display:flex;align-items:center;gap:12px;}
+.card-icon{width:44px;height:44px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--gray-50);}
+.card-body{flex:1;min-width:0;}
+.card-title{font-size:15px;font-weight:500;color:var(--gray-900);}
+.card-sub{font-size:12px;color:var(--gray-500);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chevron{font-size:14px;color:var(--gray-300);}
+
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;flex-shrink:0;border:2px solid var(--white);}
+.av-sm{width:26px;height:26px;font-size:9px;}
+.av-md{width:36px;height:36px;font-size:12px;}
+.av-lg{width:56px;height:56px;font-size:17px;}
+.av-0{background:#EEEDff;color:#534AB7;} .av-1{background:#E1F5EE;color:#0F6E56;}
+.av-2{background:#FAECE7;color:#993C1D;} .av-3{background:#FBEAF0;color:#993556;}
+.av-4{background:#E6F1FB;color:#185FA5;} .av-5{background:#FAEEDA;color:#854F0B;}
+.av-6{background:#EAF3DE;color:#3B6D11;} .av-7{background:#FCF0E0;color:#8C5100;}
+
+/* Three-way vote pills */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--r-full);font-size:11px;font-weight:500;}
+.pill-super{background:#E8F5E9;color:#1B6B2E;}
+.pill-could{background:var(--amber-light);color:#8C5100;}
+.pill-pass{background:var(--red-light);color:#A32D2D;}
+.pill-pending{background:var(--gray-100);color:var(--gray-500);}
+.pill-tap{background:var(--amber-light);color:#8C5100;cursor:pointer;border:1px dashed var(--amber);}
+
+/* Three-way vote buttons */
+.vote3-row{display:flex;gap:6px;margin-top:12px;}
+.v3btn{flex:1;padding:8px 4px;border-radius:var(--r-md);font-size:12px;font-weight:500;border:1px solid var(--gray-200);background:var(--gray-50);color:var(--gray-500);cursor:pointer;transition:all .12s;font-family:var(--font-main);text-align:center;}
+.v3btn.super{background:#E8F5E9;border-color:#9FD4AC;color:#1B6B2E;}
+.v3btn.could{background:var(--amber-light);border-color:#F0C97A;color:#8C5100;}
+.v3btn.pass{background:var(--red-light);border-color:#F7C1C1;color:#A32D2D;}
+
+.add-row{display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px dashed var(--gray-200);border-radius:var(--r-lg);cursor:pointer;font-size:14px;color:var(--purple);font-weight:500;transition:all .12s;margin-bottom:10px;user-select:none;}
+.add-row:hover{background:var(--purple-light);border-color:var(--purple-mid);}
+
+/* Overlay / Modal */
+.overlay{position:absolute;inset:0;z-index:100;pointer-events:none;border-radius:44px;}
+.overlay-inner{position:absolute;inset:0;background:rgba(28,26,23,.5);border-radius:44px;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--white);border-radius:var(--r-xl);padding:22px 20px;width:100%;box-shadow:var(--shadow-lg);max-height:86%;overflow-y:auto;}
+.modal::-webkit-scrollbar{display:none;}
+.modal-title{font-size:17px;font-weight:600;color:var(--gray-900);margin-bottom:6px;}
+.modal-sub{font-size:13px;color:var(--gray-500);margin-bottom:16px;}
+.modal-btns{display:flex;gap:8px;margin-top:16px;}
+.mbtn{flex:1;padding:11px;border-radius:var(--r-md);font-size:14px;font-weight:500;border:none;cursor:pointer;font-family:var(--font-main);transition:all .12s;}
+.mbtn:active{transform:scale(.98);}
+.mbtn-cancel{background:var(--gray-100);color:var(--gray-500);}
+.mbtn-primary{background:var(--purple);color:white;}
+.mbtn-green{background:var(--green);color:white;}
+.input-field{width:100%;padding:10px 14px;border:1px solid var(--gray-200);border-radius:var(--r-md);font-size:14px;color:var(--gray-900);background:var(--white);margin-bottom:10px;font-family:var(--font-main);outline:none;transition:border-color .15s;}
+.input-field:focus{border-color:var(--purple);}
+.chip-group{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.contact-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:var(--gray-100);color:var(--gray-700);border-radius:var(--r-full);font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;border:1.5px solid transparent;user-select:none;}
+.contact-chip.sel{background:var(--purple-light);color:var(--purple);border-color:var(--purple-mid);}
+.checkbox-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--gray-100);cursor:pointer;}
+.checkbox-box{width:20px;height:20px;border:1.5px solid var(--gray-200);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;font-size:12px;color:white;}
+.checkbox-box.checked{background:var(--purple);border-color:var(--purple);}
+.checkbox-label{font-size:13px;color:var(--gray-700);}
+
+.back-btn{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--purple);font-weight:500;cursor:pointer;margin-bottom:14px;user-select:none;}
+
+/* Overlap cards in group detail */
+.overlap-card{border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:10px;background:var(--white);}
+.overlap-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.overlap-name{font-size:14px;font-weight:500;flex:1;color:var(--gray-900);}
+.count-badge{background:var(--purple-light);color:var(--purple);font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);}
+.progress-bar{height:4px;background:var(--gray-100);border-radius:2px;margin-bottom:10px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),#A89BF9);border-radius:2px;transition:width .3s;}
+.member-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--gray-50);}
+.member-name{font-size:13px;color:var(--gray-700);flex:1;}
+
+.oa-row{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--gray-100);}
+.oa-btn{flex:1;padding:7px 8px;border-radius:var(--r-md);font-size:12px;font-weight:500;border:1px solid var(--gray-200);background:var(--gray-50);color:var(--gray-500);cursor:pointer;font-family:var(--font-main);transition:all .12s;display:flex;align-items:center;justify-content:center;gap:4px;}
+.oa-btn.text-btn{color:var(--purple);border-color:var(--purple-mid);background:var(--purple-light);}
+.oa-btn.dismiss-btn{color:var(--gray-500);}
+
+/* Explore event cards */
+.event-card{border:1px solid var(--gray-100);border-radius:var(--r-lg);margin-bottom:10px;background:var(--white);box-shadow:var(--shadow-sm);overflow:hidden;cursor:pointer;transition:all .12s;}
+.event-card:hover{box-shadow:var(--shadow-md);}
+.event-card-body{padding:14px 16px 10px;}
+.event-top{display:flex;align-items:flex-start;gap:12px;}
+.event-icon-wrap{width:46px;height:46px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.event-title{font-size:15px;font-weight:500;color:var(--gray-900);line-height:1.3;}
+.event-meta{font-size:12px;color:var(--gray-500);margin-top:3px;}
+.event-date-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--gray-700);background:var(--gray-50);border:1px solid var(--gray-200);padding:3px 10px;border-radius:var(--r-full);margin-top:6px;}
+.floated-by{font-size:11px;color:var(--purple);margin-top:4px;font-style:italic;}
+
+/* Floated-by-friends header section */
+.floated-section{background:linear-gradient(135deg,var(--purple-light),#F5F3FF);border:1px solid var(--purple-mid);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:16px;}
+.floated-section-header{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.floated-section-label{font-size:12px;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;}
+.floated-ev-chip{display:flex;align-items:center;gap:8px;padding:8px 10px;background:white;border-radius:var(--r-md);margin-bottom:6px;cursor:pointer;border:1px solid var(--purple-mid);transition:all .12s;}
+.floated-ev-chip:last-child{margin-bottom:0;}
+.floated-ev-chip:hover{background:var(--purple-light);}
+
+.type-toggle{display:flex;background:var(--gray-100);border-radius:var(--r-md);padding:3px;gap:2px;margin-bottom:14px;}
+.type-btn{flex:1;padding:7px 8px;text-align:center;font-size:13px;color:var(--gray-500);border-radius:9px;cursor:pointer;transition:all .15s;user-select:none;}
+.type-btn.active{background:var(--white);color:var(--gray-900);font-weight:500;box-shadow:var(--shadow-sm);}
+.filter-row{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;}
+.filter-row::-webkit-scrollbar{display:none;}
+.fchip{flex-shrink:0;padding:5px 12px;border-radius:var(--r-full);font-size:12px;font-weight:500;border:1px solid var(--gray-200);color:var(--gray-500);background:var(--white);cursor:pointer;transition:all .12s;user-select:none;}
+.fchip.active{background:var(--purple);color:white;border-color:var(--purple);}
+
+/* Profile */
+.profile-hero{display:flex;flex-direction:column;align-items:center;padding:20px 0 24px;border-bottom:1px solid var(--gray-100);margin-bottom:16px;}
+.profile-name{font-size:22px;font-weight:600;color:var(--gray-900);margin-top:12px;}
+.profile-loc{font-size:13px;color:var(--gray-500);margin-top:3px;}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.stat-card{background:var(--gray-50);border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:14px;text-align:center;}
+.stat-num{font-size:26px;font-weight:600;color:var(--purple);}
+.stat-label{font-size:12px;color:var(--gray-500);margin-top:2px;}
+
+/* Notifications panel */
+.notif-panel{padding:0;}
+.notif-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--gray-100);align-items:flex-start;}
+.notif-item:last-child{border-bottom:none;}
+.notif-icon-wrap{width:36px;height:36px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.notif-text{font-size:13px;color:var(--gray-700);flex:1;line-height:1.4;}
+.notif-text strong{color:var(--gray-900);}
+.notif-time{font-size:11px;color:var(--gray-300);margin-top:3px;}
+.notif-action{display:inline-block;margin-top:6px;font-size:12px;font-weight:500;color:var(--purple);cursor:pointer;background:var(--purple-light);padding:3px 10px;border-radius:var(--r-full);}
+.notif-unread{background:var(--purple-light);}
+
+/* Event detail (overlap by group) */
+.group-overlap-row{padding:10px 12px;border:1px solid var(--gray-100);border-radius:var(--r-md);margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .12s;}
+.group-overlap-row:hover{background:var(--gray-50);}
+
+select{font-family:var(--font-main);}
+label{font-size:12px;color:var(--gray-500);font-weight:500;display:block;margin-bottom:4px;}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-logo">mo<span>v</span>es</div>
+  <div class="beta-badge">beta</div>
+</div>
+
+<div class="demo-note">
+  <strong>Try it as yourself:</strong> change “viewing as” to “You,” then add friends or groups to see what Moves could feel like with your own circle.
+</div>
+
+<div class="user-bar">
+  <span style="font-size:13px;">viewing as</span>
+  <select id="userSelect" onchange="switchUser()">
+    <option value="default">👤 Default viewer</option>
+    <option value="you">✨ You (SF)</option>
+    <option value="you_sea">✨ You (Seattle)</option>
+    <option value="tara">Tara</option>
+    <option value="pavi">Pavi</option>
+    <option value="kelsey">Kelsey</option>
+    <option value="rahul">Rahul</option>
+    <option value="james">James</option>
+    <option value="rads">Rads</option>
+  </select>
+  <span class="user-bar-arrow">▾</span>
+</div>
+
+<div class="phone-frame" id="phone">
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="dynamic-island"></div>
+    <span style="display:flex;gap:6px;align-items:center;">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y=".5" width="3" height="11.5" rx="1"/></svg>
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x=".5" y=".5" width="14" height="11" rx="2.5" stroke="currentColor" stroke-opacity=".3"/><rect x="2" y="2" width="10" height="8" rx="1.5" fill="currentColor"/></svg>
+    </span>
+  </div>
+
+  <div class="app-header">
+    <div class="app-title-row">
+      <div class="app-logo">mo<em>v</em>es</div>
+      <div class="notif-btn" onclick="openNotifications()">🔔<div class="notif-dot" id="notif-dot"></div></div>
+    </div>
+    <div class="tab-row">
+      <div class="tab active" data-tab="friends" onclick="switchTab('friends')">👥 friends</div>
+      <div class="tab" data-tab="explore" onclick="switchTab('explore')">🗺 explore</div>
+      <div class="tab" data-tab="profile" onclick="switchTab('profile')">🙂 profile</div>
+    </div>
+  </div>
+
+  <div class="content-area" id="content"></div>
+
+  <div class="bottom-nav">
+    <div class="nav-item active" id="nav-friends" onclick="switchTab('friends')"><div class="nav-icon">👥</div><span>friends</span></div>
+    <div class="nav-item" id="nav-explore" onclick="switchTab('explore')"><div class="nav-icon">🗺</div><span>explore</span></div>
+    <div class="nav-item" id="nav-profile" onclick="switchTab('profile')"><div class="nav-icon">🙂</div><span>profile</span></div>
+  </div>
+
+  <div id="overlay" class="overlay"></div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────
+const USERS = {
+  you:    { name:'You',     city:'San Francisco, CA',  emoji:'✨', isYou:true },
+  you_sea:{ name:'You',     city:'Seattle, WA',        emoji:'✨', isYou:true },
+  default:{ name:'Alex',    city:'New York, NY',       emoji:'👤' },
+  tara:   { name:'Tara',    city:'San Francisco, CA',  emoji:'💫' },
+  pavi:   { name:'Pavi',    city:'San Francisco, CA',  emoji:'🌸' },
+  kelsey: { name:'Kelsey',  city:'San Francisco, CA',  emoji:'✨' },
+  rahul:  { name:'Rahul',   city:'San Francisco, CA',  emoji:'🔥' },
+  james:  { name:'James',   city:'Seattle, WA',        emoji:'☁️' },
+  rads:   { name:'Rads',    city:'Seattle, WA',        emoji:'🌿' }
+};
+
+const GROUPS = {
+  default:[
+    { id:'crew',    name:'the crew',    emoji:'🎉', members:['Jordan','Sam','Casey','Morgan'] },
+    { id:'work',    name:'work buds',   emoji:'💼', members:['Riley','Quinn','Avery'] },
+    { id:'roomies', name:'roomies',     emoji:'🏠', members:['Dakota','Skyler'] },
+    { id:'so',      name:'the SO',      emoji:'💜', members:['Jamie'] },
+  ],
+  tara:[
+    { id:'cia',     name:'CIA',         emoji:'🕵️', members:['Maddie','Lucas','Courtney','Sonia'] },
+    { id:'girlies', name:'the girlies', emoji:'✨', members:['Ravina','Akka','Kelsey','Pavi'] },
+    { id:'thebf',   name:'the bf',      emoji:'💜', members:['Shiv'] },
+    { id:'ruhi',    name:'Ruhi',        emoji:'🌸', members:['Ruhi'] },
+  ],
+  pavi:[
+    { id:'roomies', name:'roomies',     emoji:'🏠', members:['Jon','Vineet','Kousheyo'] },
+    { id:'girlies', name:'the girlies', emoji:'✨', members:['Megha','Akshara','Dhvani','Milinda'] },
+    { id:'thebf',   name:'the bf',      emoji:'💜', members:['Sai'] },
+  ],
+  kelsey:[
+    { id:'girlies', name:'the girlies',       emoji:'✨', members:['Tara','Megha','Ravina','Pavi'] },
+    { id:'dds',     name:'double date squad',  emoji:'🥂', members:['Linda','Jon','Kevin'] },
+    { id:'thebf',   name:'the bf',             emoji:'💜', members:['Jon'] },
+  ],
+  rahul:[
+    { id:'theboys', name:'the boys',     emoji:'🔥', members:['Andrew','Dheeraj','Yeon'] },
+    { id:'seattle', name:'seattle squad',emoji:'☁️', members:['Dheeraj','Megha','Dhvani'] },
+    { id:'thegf',   name:'the gf',       emoji:'💜', members:['Neha'] },
+  ],
+  you:[
+    { id:'movesteam',name:'Moves Team',  emoji:'🌊', members:['Megha','James','Tanner','Pranay','Will'] },
+  ],
+  you_sea:[
+    { id:'movesteam',name:'Moves Team',  emoji:'🌊', members:['Megha','James','Tanner','Pranay','Will'] },
+  ],
+  james:[
+    { id:'thegf',   name:'the gf',       emoji:'💜', members:['Kaitlyn'] },
+    { id:'606ers',  name:'606ers',        emoji:'🏙️', members:['Megha','Jon','Harp','Will','Richie'] },
+    { id:'goochy',  name:'goochy gang',   emoji:'🎉', members:['Lauren','Rads','Megha','Halle','Pranay','Harp','Kaitlyn','Marissa','Shruti','AJ'] },
+    { id:'theboys', name:'the boys',      emoji:'🔥', members:['Richie','Will','Davis','Saad','Pranay'] },
+  ],
+  rads:[
+    { id:'thegirlz', name:'the girlz',    emoji:'🌸', members:['Lauren','Shruti','Marissa','Melinda','Peyton'] },
+    { id:'movies',   name:'movie squad',  emoji:'🎬', members:['Megha','Lauren'] },
+    { id:'rids',     name:'rids',         emoji:'💜', members:['Rids'] },
+    { id:'goochy',   name:'goochy gang',  emoji:'🎉', members:['Lauren','Rads','Megha','Halle','Pranay','Harp','Kaitlyn','Marissa','Shruti','AJ'] },
+  ]
+};
+
+const CAT_COLORS={
+  'Bars & nightlife':     {bg:'#FEF3DC',color:'#8C5100'},
+  'Brunch & restaurants': {bg:'#FAECE7',color:'#993C1D'},
+  'Outdoor / active':     {bg:'#E1F5EE',color:'#0F6E56'},
+  'Arts & culture':       {bg:'#EEEDff',color:'#534AB7'},
+  'Cozy / lowkey':        {bg:'#E6F1FB',color:'#185FA5'},
+};
+const ALL_CATS=Object.keys(CAT_COLORS);
+
+// Events per city
+const NYC_EVENTS=[
+  {id:'n1',type:'event',emoji:'🎭',title:'Broadway: Hamilton',cat:'Arts & culture',date:'2025-06-07',dateLabel:'Jun 7 · 7:00 PM',venue:'Richard Rodgers Theatre',floatedBy:'Jordan'},
+  {id:'n2',type:'event',emoji:'🍕',title:'Pizza Crawl — Lower East Side',cat:'Brunch & restaurants',date:'2025-06-08',dateLabel:'Jun 8 · 1:00 PM',venue:'LES, Manhattan',floatedBy:null},
+  {id:'n3',type:'event',emoji:'🎶',title:'Central Park Summerstage',cat:'Arts & culture',date:'2025-06-14',dateLabel:'Jun 14 · 6:00 PM',venue:'Central Park',floatedBy:'Sam'},
+  {id:'n4',type:'event',emoji:'🍸',title:'Rooftop Happy Hour — 230 Fifth',cat:'Bars & nightlife',date:'2025-06-20',dateLabel:'Jun 20 · 5:00 PM',venue:'230 Fifth Ave',floatedBy:null},
+  {id:'n5',type:'event',emoji:'🏃',title:'Brooklyn Bridge 5K',cat:'Outdoor / active',date:'2025-06-28',dateLabel:'Jun 28 · 7:00 AM',venue:'Brooklyn Bridge',floatedBy:'Casey'},
+  {id:'n6',type:'event',emoji:'🎤',title:'Comedy Cellar Late Show',cat:'Arts & culture',date:'2025-06-13',dateLabel:'Jun 13 · 10:30 PM',venue:'Comedy Cellar, Village',floatedBy:null},
+  {id:'n7',type:'event',emoji:'🌿',title:'Brooklyn Botanic Garden Night',cat:'Outdoor / active',date:'2025-06-19',dateLabel:'Jun 19 · 6:00 PM',venue:'Brooklyn Botanic Garden',floatedBy:'Morgan'},
+  {id:'n8',type:'event',emoji:'🍷',title:'Wine & Jazz — Blue Note',cat:'Bars & nightlife',date:'2025-06-21',dateLabel:'Jun 21 · 8:00 PM',venue:'Blue Note Jazz Club',floatedBy:null},
+  {id:'n9',type:'event',emoji:'🏖️',title:'Rockaway Beach Day',cat:'Outdoor / active',date:'2025-06-22',dateLabel:'Jun 22 · 11:00 AM',venue:'Rockaway Beach, Queens',floatedBy:'Jordan'},
+  {id:'n10',type:'event',emoji:'🎨',title:'MoMA After Hours',cat:'Arts & culture',date:'2025-06-27',dateLabel:'Jun 27 · 5:30 PM',venue:'MoMA',floatedBy:null},
+  {id:'na1',type:'activity',emoji:'🥯',title:'Bagels & coffee — Ess-a-Bagel',cat:'Brunch & restaurants',floatedBy:'Morgan',dateOptions:['Jun 8 · 10am','Jun 15 · 10am']},
+  {id:'na2',type:'activity',emoji:'🎳',title:'Bowling night — Frames',cat:'Cozy / lowkey',floatedBy:null},
+  {id:'na3',type:'activity',emoji:'🚣',title:'Kayak the Hudson',cat:'Outdoor / active',floatedBy:'Jordan',dateOptions:['Jun 14 · 11am','Jun 21 · 11am']},
+  {id:'na4',type:'activity',emoji:'🍻',title:'Bar hop — East Village',cat:'Bars & nightlife',floatedBy:null},
+  {id:'na5',type:'activity',emoji:'🎨',title:'Paint & sip night',cat:'Arts & culture',floatedBy:'Sam'},
+  {id:'na6',type:'activity',emoji:'🥾',title:'Hike — Breakneck Ridge',cat:'Outdoor / active',floatedBy:null},
+  {id:'na7',type:'activity',emoji:'🍳',title:'Brunch — anywhere you want',cat:'Brunch & restaurants',floatedBy:'Casey',dateOptions:['Jun 14 · 11am','Jun 21 · 11am']},
+];
+
+const SF_EVENTS=[
+  {id:'e1',type:'event',emoji:'🎵',title:'Outside Lands Festival',cat:'Arts & culture',date:'2025-08-08',dateLabel:'Aug 8–10',venue:'Golden Gate Park',floatedBy:null},
+  {id:'e2',type:'event',emoji:'⚾',title:'Giants vs Dodgers',cat:'Outdoor / active',date:'2025-06-14',dateLabel:'Jun 14 · 7:15 PM',venue:'Oracle Park',floatedBy:'Rahul'},
+  {id:'e3',type:'event',emoji:'🖼️',title:'SFMOMA Members Night',cat:'Arts & culture',date:'2025-06-20',dateLabel:'Jun 20 · 6:00 PM',venue:'SFMOMA',floatedBy:null},
+  {id:'e4',type:'event',emoji:'🌇',title:'Rooftop Happy Hour',cat:'Bars & nightlife',date:'2025-06-07',dateLabel:'Jun 7 · 5:00 PM',venue:'The Battery',floatedBy:'Kelsey'},
+  {id:'e5',type:'event',emoji:'🧘',title:'Pilates Pop-up',cat:'Cozy / lowkey',date:'2025-06-08',dateLabel:'Jun 8 · 9:00 AM',venue:'Ritual Hot Pilates',floatedBy:'Pavi'},
+  {id:'e6',type:'event',emoji:'🍸',title:'Aperitivo Night at Wildhawk',cat:'Bars & nightlife',date:'2025-06-07',dateLabel:'Jun 7 · 7:00 PM',venue:'Wildhawk Bar',floatedBy:'Sonia'},
+  {id:'e7',type:'event',emoji:'🌮',title:'La Lengua Taco Festival',cat:'Brunch & restaurants',date:'2025-06-21',dateLabel:'Jun 21 · 12:00 PM',venue:'Mission District',floatedBy:null},
+  {id:'e8',type:'event',emoji:'🎤',title:'Comedy Night at Cobb\'s',cat:'Arts & culture',date:'2025-06-19',dateLabel:'Jun 19 · 8:00 PM',venue:'Cobb\'s Comedy Club',floatedBy:'Maddie'},
+  {id:'e9',type:'event',emoji:'🍷',title:'Wine Tasting — Sonoma Popup',cat:'Bars & nightlife',date:'2025-06-22',dateLabel:'Jun 22 · 3:00 PM',venue:'Fort Mason',floatedBy:null},
+  {id:'e10',type:'event',emoji:'🏄',title:'Ocean Beach Bonfire',cat:'Outdoor / active',date:'2025-06-28',dateLabel:'Jun 28 · 6:00 PM',venue:'Ocean Beach',floatedBy:'Lucas'},
+  {id:'a1',type:'activity',emoji:'🥐',title:'Brunch at Tartine',cat:'Brunch & restaurants',floatedBy:null},
+  {id:'a2',type:'activity',emoji:'🎾',title:'Tennis at Dolores Park',cat:'Outdoor / active',floatedBy:'Tara',dateOptions:['Jun 14 · 10am','Jun 21 · 10am']},
+  {id:'a3',type:'activity',emoji:'🍹',title:'Bar crawl in the Mission',cat:'Bars & nightlife',floatedBy:null},
+  {id:'a4',type:'activity',emoji:'🎲',title:'Game night',cat:'Cozy / lowkey',floatedBy:'Maddie',dateOptions:['Jun 13 · 7pm','Jun 20 · 7pm','Jun 27 · 7pm']},
+  {id:'a5',type:'activity',emoji:'🥾',title:'Day hike at Marin Headlands',cat:'Outdoor / active',floatedBy:null},
+  {id:'a6',type:'activity',emoji:'🍜',title:'Ramen crawl — Japantown',cat:'Brunch & restaurants',floatedBy:'Sonia'},
+  {id:'a7',type:'activity',emoji:'🧖',title:'Spa day at Kabuki Springs',cat:'Cozy / lowkey',floatedBy:null},
+  {id:'a8',type:'activity',emoji:'🎨',title:'Paint & sip at Pinot\'s Palette',cat:'Arts & culture',floatedBy:'Ravina'},
+  {id:'a9',type:'activity',emoji:'🥾',title:'Hike — Tennessee Valley Trail',cat:'Outdoor / active',floatedBy:null,dateOptions:['Jun 15 · 8am','Jun 22 · 8am']},
+  {id:'a10',type:'activity',emoji:'🍳',title:'Brunch — any spot, you pick',cat:'Brunch & restaurants',floatedBy:'Kelsey',dateOptions:['Jun 14 · 11am','Jun 21 · 11am']},
+];
+
+const SEA_EVENTS=[
+  {id:'se1',type:'event',emoji:'🎨',title:'Seattle Art Museum Gala',cat:'Arts & culture',date:'2025-06-28',dateLabel:'Jun 28 · 7:00 PM',venue:'SAM Downtown',floatedBy:null},
+  {id:'se2',type:'event',emoji:'⚾',title:'Mariners Home Game',cat:'Outdoor / active',date:'2025-06-15',dateLabel:'Jun 15 · 1:10 PM',venue:'T-Mobile Park',floatedBy:'Kaitlyn'},
+  {id:'se3',type:'event',emoji:'🎶',title:'Bumbershoot Music Fest',cat:'Arts & culture',date:'2025-08-30',dateLabel:'Aug 30–31',venue:'Seattle Center',floatedBy:null},
+  {id:'se4',type:'event',emoji:'🍷',title:'Capitol Hill Wine Walk',cat:'Bars & nightlife',date:'2025-06-07',dateLabel:'Jun 7 · 4:00 PM',venue:'Capitol Hill',floatedBy:'Harp'},
+  {id:'se5',type:'event',emoji:'🎸',title:'Neumos Indie Night',cat:'Arts & culture',date:'2025-06-08',dateLabel:'Jun 8 · 8:00 PM',venue:'Neumos',floatedBy:null},
+  {id:'sa1',type:'activity',emoji:'🦀',title:'Pike Place Market brunch',cat:'Brunch & restaurants',floatedBy:null},
+  {id:'sa2',type:'activity',emoji:'🚣',title:'Kayaking on Lake Union',cat:'Outdoor / active',floatedBy:'Harp',dateOptions:['Jun 15 · 10am','Jun 22 · 10am']},
+  {id:'sa3',type:'activity',emoji:'🍺',title:'Capitol Hill bar hop',cat:'Bars & nightlife',floatedBy:null},
+  {id:'sa4',type:'activity',emoji:'🎲',title:'Cozy game night',cat:'Cozy / lowkey',floatedBy:'Richie',dateOptions:['Jun 14 · 7pm','Jun 21 · 7pm']},
+];
+
+function getEvents(u){return (u==='james'||u==='rads'||u==='you_sea')?SEA_EVENTS:u==='default'?NYC_EVENTS:SF_EVENTS;}
+
+// Per-user floatedBy context — who floated which event FOR THIS USER's perspective
+// This avoids global contamination. Keys: userId -> evId -> floaterName
+const USER_FLOATED_BY = {
+  tara:   { a8:'Kelsey', e3:'Pavi', a10:'Ravina' },
+  pavi:   { e4:'Jon', a2:'Megha', a9:'Dhvani' },
+  kelsey: { a6:'Tara', e5:'Megha', a4:'Ravina' },
+  rahul:  { a1:'Andrew', e4:'Dheeraj', a8:'Yeon' },
+  james:  { sa1:'Kaitlyn', se2:'Harp', sa4:'Richie' },
+  rads:   { sa2:'Lauren', se3:'Pranay', sa1:'Megha' },
+  default:{ na1:'Morgan', n3:'Sam', na5:'Casey' },
+};
+
+// Get the floatedBy name for an event from the current user's perspective
+function getFloatedBy(evId){
+  const override=USER_FLOATED_BY[cu];
+  if(override&&override[evId]) return override[evId];
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  if(!ev) return null;
+  const myContacts=new Set(GROUPS[cu].flatMap(g=>g.members));
+  return (ev.floatedBy&&ev.floatedBy!==USERS[cu].name&&myContacts.has(ev.floatedBy))?ev.floatedBy:null;
+}
+
+// nudgedSent tracks which member+ev combos we've nudged this session
+let nudgedSent={};
+
+function getNotifications(u){
+  const groups=GROUPS[u];
+  const g0=groups[0],g1=groups[1]||groups[0];
+  const evs=getEvents(u);
+  const ev0=evs[0],ev1=evs[1],ev2=evs[2]||evs[0];
+  // Find a floated activity with dateOptions for date nudge demo
+  const floatedWithDates=evs.find(e=>e.type==='activity'&&e.dateOptions&&e.dateOptions.length&&e.floatedBy&&e.floatedBy!==USERS[u].name);
+  const dateNudgeNotif=floatedWithDates?{
+    id:'nd1',icon:'📅',
+    text:`<strong>${g0.members[0]}</strong> proposed <strong>${floatedWithDates.dateOptions[0]}</strong> for <strong>${floatedWithDates.title}</strong> in <strong>${g0.name}</strong> — mark your availability!`,
+    time:'2m ago',unread:true,action:'goVote',nudgedGroup:g0.id,nudgedEvId:floatedWithDates.id
+  }:null;
+  const notifs=[
+    // Someone nudged ME about a specific activity/event
+    {id:'n0',icon:'👋',text:`<strong>${g0.members[0]}</strong> nudged you about <strong>${ev1.title}</strong> in <strong>${g0.name}</strong>`,time:'just now',unread:true,action:'goVote',nudgedGroup:g0.id,nudgedEvId:ev1.id},
+    // Friend floated something
+    {id:'n1',icon:'🌊',text:`<strong>${g0.members[1]||g0.members[0]}</strong> floated <strong>${ev0.title}</strong> to <strong>${g0.name}</strong>`,time:'5m ago',unread:true,action:null},
+    // Friend is super interested
+    {id:'n2',icon:'🔥',text:`<strong>${g1.members[0]}</strong> is <strong>super interested</strong> in <strong>${ev1.title}</strong>`,time:'22m ago',unread:true,action:null},
+    // Someone pending — I can nudge them
+    {id:'n3',icon:'⏳',text:`<strong>${g0.members[g0.members.length>1?1:0]}</strong> hasn't responded to <strong>${ev0.title}</strong> in <strong>${g0.name}</strong>`,time:'1h ago',unread:false,action:'nudge',nudgeKey:`${g0.members[g0.members.length>1?1:0]}_${ev0.id}`},
+    // Another float
+    {id:'n4',icon:'🌊',text:`<strong>${g1.members[g1.members.length>1?1:0]||g1.members[0]}</strong> floated <strong>${ev2.title}</strong> to <strong>${g1.name}</strong>`,time:'3h ago',unread:false,action:null},
+    // Group heating up
+    {id:'n5',icon:'🎉',text:`3 people in <strong>${g0.name}</strong> are super interested in <strong>${ev1.title}</strong> — it's heating up!`,time:'5h ago',unread:false,action:null},
+    // Another pending to nudge
+    {id:'n6',icon:'⏳',text:`<strong>${g1.members[0]}</strong> hasn't responded to <strong>${ev2.title}</strong> in <strong>${g1.name}</strong>`,time:'Yesterday',unread:false,action:'nudge',nudgeKey:`${g1.members[0]}_${ev2.id}`},
+  ];
+  if(dateNudgeNotif) notifs.splice(1,0,dateNudgeNotif); // insert after first nudge
+  return notifs;
+}
+
+// State
+let cu='default', currentTab='friends', openGroup=null;
+let exploreType='event', dateFilter='all', catFilter='all';
+// dateVotes: { userId: { evId: { 'me': {0:'yes',1:'no'}, memberName: {0:'yes'} } } }
+let votes={}, groupSeed={}, dismissedItems={}, dateVotes={}, dismissedFloated={};
+let collapsedCards={}, collapsedDateTables={};
+
+function toggleCardCollapse(gid,evId){
+  if(!collapsedCards[gid])collapsedCards[gid]=new Set();
+  if(collapsedCards[gid].has(evId))collapsedCards[gid].delete(evId);
+  else collapsedCards[gid].add(evId);
+  renderGroupDetail();
+}
+
+function skipDateAvail(evId,i,btn){
+  if(!dateVotes[cu][evId])dateVotes[cu][evId]={};
+  if(!dateVotes[cu][evId]['me'])dateVotes[cu][evId]['me']={};
+  dateVotes[cu][evId]['me'][i]=null;
+  // Style ? as active purple, clear yes/no
+  const yesBtn=document.getElementById(`dav-yes-${evId}-${i}`);
+  const noBtn=document.getElementById(`dav-no-${evId}-${i}`);
+  if(yesBtn){yesBtn.style.borderColor='var(--gray-200)';yesBtn.style.background='white';yesBtn.style.color='var(--gray-500)';}
+  if(noBtn){noBtn.style.borderColor='var(--gray-200)';noBtn.style.background='white';noBtn.style.color='var(--gray-500)';}
+  if(btn){btn.style.borderColor='var(--purple-mid)';btn.style.background='var(--purple-light)';btn.style.color='var(--purple)';btn.style.fontWeight='600';}
+}
+
+function collapseAllCards(gid,evIdsStr){
+  const ids=evIdsStr.split(',').filter(Boolean);
+  if(!collapsedCards[gid])collapsedCards[gid]=new Set();
+  const allCollapsed=ids.every(id=>collapsedCards[gid].has(id));
+  ids.forEach(id=>allCollapsed?collapsedCards[gid].delete(id):collapsedCards[gid].add(id));
+  renderGroupDetail();
+}
+
+function toggleDateTable(evId){
+  collapsedDateTables[evId]=!collapsedDateTables[evId];
+  const el=document.getElementById('dt-'+evId);
+  const arrow=document.getElementById('dta-'+evId);
+  if(el)el.style.display=collapsedDateTables[evId]?'none':'block';
+  if(arrow)arrow.textContent=collapsedDateTables[evId]?'▼':'▲';
+}
+
+function buildDateSummary(ev,members){
+  if(!ev.dateOptions||!ev.dateOptions.length) return null;
+  return ev.dateOptions.map((d,i)=>{
+    const works=[];const cant=[];
+    members.forEach(m=>{
+      const v=dateVotes[cu]&&dateVotes[cu][ev.id]&&dateVotes[cu][ev.id][m]&&dateVotes[cu][ev.id][m][i];
+      if(v==='yes')works.push(m); else if(v==='no')cant.push(m);
+    });
+    const meV=dateVotes[cu]&&dateVotes[cu][ev.id]&&dateVotes[cu][ev.id]['me']&&dateVotes[cu][ev.id]['me'][i];
+    if(meV==='yes')works.push('you'); else if(meV==='no')cant.push('you');
+    return `${d}: ✓ ${works.join(', ')||'none'} | ✕ ${cant.join(', ')||'none'}`;
+  }).join('\n');
+}
+
+function openProposeDates(evId,gid){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  const existing=ev.dateOptions||[];
+  const existingHtml=existing.length
+    ?`<div style="font-size:12px;color:var(--gray-500);margin-bottom:8px;">existing: ${existing.join(', ')}</div>`:
+    `<div style="font-size:12px;color:var(--gray-500);margin-bottom:8px;">no dates proposed yet — add up to 3</div>`;
+  showOverlay(`
+    <div class="modal-title">📅 propose dates</div>
+    <div class="modal-sub">${ev.emoji} ${ev.title}</div>
+    ${existingHtml}
+    <label>add date option${existing.length?'s (appended)':''}</label>
+    <input class="input-field" id="pd1" placeholder="e.g. Jun 14 · 7pm" />
+    <input class="input-field" id="pd2" placeholder="another option — optional" />
+    <input class="input-field" id="pd3" placeholder="one more — optional" />
+    <div style="font-size:12px;color:var(--purple);background:var(--purple-light);border-radius:var(--r-md);padding:8px 12px;margin-bottom:14px;">
+      👋 after proposing, a nudge will be sent to the group to mark their availability
+    </div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeOverlay()">cancel</button>
+      <button class="mbtn mbtn-primary" onclick="saveProposedDates('${evId}','${gid}')">propose & nudge</button>
+    </div>
+  `);
+}
+
+function saveProposedDates(evId,gid){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  const newDates=['pd1','pd2','pd3'].map(id=>document.getElementById(id).value.trim()).filter(Boolean);
+  if(!newDates.length){alert('add at least one date!');return;}
+  if(!ev.dateOptions)ev.dateOptions=[];
+  newDates.forEach(d=>{if(!ev.dateOptions.includes(d))ev.dateOptions.push(d);});
+  // Seed empty dateVotes for group members for new dates
+  if(!dateVotes[cu][evId])dateVotes[cu][evId]={};
+  const g=GROUPS[cu].find(x=>x.id===gid);
+  if(g) g.members.forEach(m=>{
+    if(!dateVotes[cu][evId][m])dateVotes[cu][evId][m]={};
+  });
+  closeOverlay();
+  renderGroupDetail();
+}
+// floatedToGroups: { userId: { evId: { groupId: { dates:[], confirmed:true } } } }
+let floatedToGroups={};
+// groupFloats: { userId: { groupId: [evId, ...] } } — extra events floated INTO a group
+let groupFloats={};
+
+function colorClass(name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))&0xffffffff;return'av-'+(Math.abs(h)%8);}
+function initials(n){return n.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);}
+function av(name,size='sm'){return`<div class="av av-${size} ${colorClass(name)}">${initials(name)}</div>`;}
+
+// Pre-seeded floats: { userId: { groupId: [ {evId, floaters:[]} ] } }
+// floaters can be member names, 'you', or multiple for multi-float demo
+const SEEDED_FLOATS = {
+  tara: {
+    cia:     [ {evId:'a6', floaters:['Sonia']},
+               {evId:'e8', floaters:['Maddie','Lucas']},  // multi-float!
+               {evId:'a4', floaters:['you']} ],            // floated by you
+    girlies: [ {evId:'a2', floaters:['Kelsey']},
+               {evId:'e4', floaters:['Pavi','you']} ],     // floated by Pavi & you
+    thebf:   [ {evId:'a1', floaters:['you']} ],
+    ruhi:    [ {evId:'a3', floaters:['Ruhi']} ],
+  },
+  pavi: {
+    roomies: [ {evId:'a1', floaters:['Jon']},
+               {evId:'a4', floaters:['you']} ],
+    girlies: [ {evId:'a8', floaters:['Milinda','Dhvani']}, // multi-float!
+               {evId:'e5', floaters:['you']} ],
+    thebf:   [ {evId:'a7', floaters:['Sai']} ],
+  },
+  kelsey: {
+    girlies: [ {evId:'a10', floaters:['Tara','you']},      // floated by Tara & you
+               {evId:'e4',  floaters:['Megha']} ],
+    dds:     [ {evId:'e2',  floaters:['Jon','Kevin']},     // multi-float!
+               {evId:'a9',  floaters:['you']} ],
+    thebf:   [ {evId:'a1',  floaters:['Jon']} ],
+  },
+  rahul: {
+    theboys: [ {evId:'e2',  floaters:['Andrew','Yeon']},   // multi-float!
+               {evId:'a5',  floaters:['you']} ],
+    seattle: [ {evId:'a2',  floaters:['Dheeraj']},
+               {evId:'a9',  floaters:['you','Megha']} ],   // floated by you & Megha
+    thegf:   [ {evId:'a7',  floaters:['Neha']} ],
+  },
+  james: {
+    thegf:   [ {evId:'sa1', floaters:['Kaitlyn']} ],
+    '606ers':[ {evId:'sa2', floaters:['Harp','Richie']},  // multi-float!
+               {evId:'se4', floaters:['you']} ],
+    goochy:  [ {evId:'sa4', floaters:['Lauren']},
+               {evId:'sa2', floaters:['Pranay','Harp']} ],
+    theboys: [ {evId:'se5', floaters:['Will']},
+               {evId:'sa3', floaters:['you']} ],
+  },
+  default: {
+    crew:    [ {evId:'na7', floaters:['Morgan','Sam']},
+               {evId:'n1',  floaters:['Jordan']},
+               {evId:'na1', floaters:['you']} ],
+    work:    [ {evId:'na5', floaters:['Riley']},
+               {evId:'na6', floaters:['you']} ],
+    roomies: [ {evId:'na2', floaters:['Dakota']} ],
+    so:      [ {evId:'na7', floaters:['Jamie']} ],
+  },
+  you: {
+    movesteam:[ {evId:'e2', floaters:['Megha','James']}, {evId:'a5', floaters:['you']} ],
+  },
+  you_sea: {
+    movesteam:[ {evId:'se2', floaters:['Megha','James']}, {evId:'sa3', floaters:['you']} ],
+  },
+  rads: {
+    thegirlz:[ {evId:'sa2', floaters:['Lauren']},
+               {evId:'sa4', floaters:['Shruti','you']} ],
+    movies:  [ {evId:'sa1', floaters:['Megha']} ],
+    rids:    [ {evId:'sa4', floaters:['Rids']} ],
+    goochy:  [ {evId:'se3', floaters:['Pranay','Harp']},
+               {evId:'sa3', floaters:['you']} ],
+  }
+};
+
+function initUser(u){
+  if(!votes[u]){votes[u]={};getEvents(u).forEach(e=>votes[u][e.id]=null);}
+  if(!dateVotes[u])dateVotes[u]={};
+  if(!dismissedFloated[u])dismissedFloated[u]=new Set();
+  if(!dismissedItems[u])dismissedItems[u]={};
+  if(!floatedToGroups[u])floatedToGroups[u]={};
+  if(!groupFloats[u]){
+    groupFloats[u]={};
+    GROUPS[u].forEach(g=>{
+      const seeded=(SEEDED_FLOATS[u]&&SEEDED_FLOATS[u][g.id])||[];
+      groupFloats[u][g.id]=seeded.map(s=>s.evId);
+    });
+  }
+  if(!groupSeed[u]){
+    groupSeed[u]={};
+    GROUPS[u].forEach(g=>{
+      groupSeed[u][g.id]={};
+      getEvents(u).forEach(e=>{
+        groupSeed[u][g.id][e.id]={};
+        g.members.forEach(m=>{const r=Math.random();groupSeed[u][g.id][e.id][m]=r<0.38?'super':r<0.55?'could':r<0.7?'pass':'pending';});
+      });
+    });
+    // Seed member dateVotes for activities with dateOptions floated into groups
+    getEvents(u).forEach(ev=>{
+      if(!ev.dateOptions||!ev.dateOptions.length) return;
+      if(!dateVotes[u][ev.id]) dateVotes[u][ev.id]={};
+      GROUPS[u].forEach(g=>{
+        const inGroup=groupFloats[u]&&groupFloats[u][g.id]&&groupFloats[u][g.id].includes(ev.id);
+        if(!inGroup) return;
+        g.members.forEach(m=>{
+          if(!dateVotes[u][ev.id][m]){
+            dateVotes[u][ev.id][m]={};
+            ev.dateOptions.forEach((_,i)=>{
+              const r=Math.random();
+              dateVotes[u][ev.id][m][i]=r<0.5?'yes':r<0.75?'no':null;
+            });
+          }
+        });
+      });
+    });
+  }
+}
+
+// vote values: null, 'super', 'could', 'pass'
+function voteOrder(v){return v==='super'?0:v==='could'?1:v==='pass'?2:3;}
+
+function switchUser(){
+  cu=document.getElementById('userSelect').value;
+  openGroup=null;initUser(cu);render();
+}
+
+function switchTab(tab){
+  currentTab=tab;openGroup=null;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.id==='nav-'+tab));
+  render();
+}
+
+function showOverlay(html){
+  const ov=document.getElementById('overlay');
+  ov.style.pointerEvents='auto';
+  ov.innerHTML=`<div class="overlay-inner" onclick="if(event.target===this)closeOverlay()"><div class="modal">${html}</div></div>`;
+}
+function closeOverlay(){const ov=document.getElementById('overlay');ov.innerHTML='';ov.style.pointerEvents='none';}
+
+function render(){
+  // 'you' viewer is always allowed — groups are set up interactively
+  closeOverlay();
+  if(currentTab==='friends') openGroup?renderGroupDetail():renderFriends();
+  else if(currentTab==='explore') renderExplore();
+  else renderProfile();
+}
+
+let groupSortBy='floated'; // 'floated' | 'overlap' | 'date'
+
+// ── FRIENDS ──────────────────────────────────────────────────
+function renderFriends(){
+  const groups=GROUPS[cu];
+  const nudgedGroups=new Set(getNotifications(cu).filter(n=>n.nudgedGroup&&n.unread).map(n=>n.nudgedGroup));
+  let html=`<div style="font-family:var(--font-display);font-size:22px;color:var(--gray-900);letter-spacing:-.5px;margin-bottom:14px;">what's the move? <span style="color:var(--purple);font-style:italic;">🌊</span></div>
+  <div class="sec-label">your groups</div>`;
+  groups.forEach(g=>{
+    const memberAvs=g.members.slice(0,4).map(m=>av(m,'sm')).join('');
+    const floatCount=(groupFloats[cu]&&groupFloats[cu][g.id]?groupFloats[cu][g.id].length:0);
+    const floatBadge=floatCount?`<span style="background:var(--purple);color:white;font-size:10px;font-weight:600;padding:2px 7px;border-radius:var(--r-full);margin-left:6px;">${floatCount} floating</span>`:'';
+    const nudgeDot=nudgedGroups.has(g.id)?`<span style="width:8px;height:8px;background:var(--amber);border-radius:50%;display:inline-block;margin-left:8px;flex-shrink:0;"></span>`:'';
+    html+=`<div class="card" onclick="openGroupView('${g.id}')">
+      <div class="card-row">
+        <div class="card-icon">${g.emoji}</div>
+        <div class="card-body">
+          <div class="card-title" style="display:flex;align-items:center;">${g.name}${floatBadge}${nudgeDot}</div>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:6px;">
+            <div style="display:flex;">${memberAvs}</div>
+            <span style="font-size:12px;color:var(--gray-500);margin-left:4px;">${g.members.length} friend${g.members.length>1?'s':''}</span>
+          </div>
+        </div>
+        <div class="chevron">›</div>
+      </div>
+    </div>`;
+  });
+  html+=`<div class="add-row" onclick="openAddGroup()"><span style="font-size:20px;">＋</span> new group</div>`;
+  document.getElementById('content').innerHTML=html;
+}
+
+function openGroupView(gid){openGroup=gid;renderGroupDetail();}
+function backToGroups(){openGroup=null;renderFriends();}
+
+function isDismissed(gid,evId){return dismissedItems[cu][gid]&&dismissedItems[cu][gid].has(evId);}
+function setAllDatesPass(evId){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  if(!ev||!ev.dateOptions||!ev.dateOptions.length) return;
+  if(!dateVotes[cu][evId]) dateVotes[cu][evId]={};
+  if(!dateVotes[cu][evId]['me']) dateVotes[cu][evId]['me']={};
+  ev.dateOptions.forEach((_,i)=>{ dateVotes[cu][evId]['me'][i]='no'; });
+}
+
+function dismiss(gid,evId){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  const name=ev?ev.title:'this';
+  const type=ev&&ev.type==='event'?'event':'activity';
+  showOverlay(`
+    <div class="modal-title">dismiss?</div>
+    <div style="font-size:14px;color:var(--gray-700);line-height:1.6;margin-bottom:20px;">
+      If you dismiss, <strong>${name}</strong> will disappear from this group and you'll show as
+      <span style="background:var(--red-light);color:#A32D2D;font-weight:600;padding:2px 8px;border-radius:var(--r-full);font-size:13px;">✕ pass</span>
+      for this ${type}.
+    </div>
+    <button class="mbtn" style="width:100%;background:var(--red);color:white;margin-bottom:8px;" onclick="confirmDismiss('${gid}','${evId}')">I understand, don't show me again</button>
+    <button class="mbtn mbtn-cancel" style="width:100%;" onclick="closeOverlay()">keep it</button>
+  `);
+}
+
+function confirmDismiss(gid,evId){
+  votes[cu][evId]='pass';
+  setAllDatesPass(evId);
+  if(!dismissedItems[cu][gid])dismissedItems[cu][gid]=new Set();
+  dismissedItems[cu][gid].add(evId);
+  closeOverlay();
+  renderGroupDetail();
+}
+
+function dismissFloated(evId){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  const name=ev?ev.title:'this';
+  const type=ev&&ev.type==='event'?'event':'activity';
+  showOverlay(`
+    <div class="modal-title">dismiss?</div>
+    <div style="font-size:14px;color:var(--gray-700);line-height:1.6;margin-bottom:20px;">
+      If you dismiss, <strong>${name}</strong> will disappear from your feed and you'll show as
+      <span style="background:var(--red-light);color:#A32D2D;font-weight:600;padding:2px 8px;border-radius:var(--r-full);font-size:13px;">✕ pass</span>
+      for this ${type}.
+    </div>
+    <button class="mbtn" style="width:100%;background:var(--red);color:white;margin-bottom:8px;" onclick="confirmDismissFloated('${evId}')">I understand, don't show me again</button>
+    <button class="mbtn mbtn-cancel" style="width:100%;" onclick="closeOverlay()">keep it</button>
+  `);
+}
+
+function confirmDismissFloated(evId){
+  votes[cu][evId]='pass';
+  setAllDatesPass(evId);
+  if(!dismissedFloated[cu])dismissedFloated[cu]=new Set();
+  dismissedFloated[cu].add(evId);
+  closeOverlay();
+  renderExplore();
+}
+
+function renderGroupDetail(){
+  const g=GROUPS[cu].find(x=>x.id===openGroup);
+  const allEvs=getEvents(cu);
+  initUser(cu);
+  const gs=groupSeed[cu][openGroup];
+  const uName=USERS[cu].name;
+  const floatedEvIds=(groupFloats[cu]&&groupFloats[cu][openGroup])||[];
+  const hiddenItems=dismissedItems[cu][openGroup]||new Set();
+
+  // Build floaterMap from SEEDED_FLOATS — reliable, explicit
+  const floaterMap={};   // evId -> display names e.g. ['Maddie','Lucas'] or ['you']
+  const groupFloatBy={}; // evId -> Set of member names (or uName) who floated
+  const seededForGroup=(SEEDED_FLOATS[cu]&&SEEDED_FLOATS[cu][openGroup])||[];
+  seededForGroup.forEach(({evId,floaters})=>{
+    floaterMap[evId]=floaters; // already in display form
+    groupFloatBy[evId]=new Set(floaters.map(f=>f==='you'?uName:f));
+  });
+
+  const allGroupEvs=allEvs.filter(e=>!hiddenItems.has(e.id));
+
+  const scored=allGroupEvs.map(ev=>{
+    const myV=votes[cu][ev.id];
+    let sup=myV==='super'?1:0,cou=myV==='could'?1:0,pas=myV==='pass'?1:0,pen=myV===null?1:0;
+    g.members.forEach(m=>{
+      const v=gs[ev.id]?gs[ev.id][m]:'pending';
+      if(v==='super')sup++;else if(v==='could')cou++;else if(v==='pass')pas++;else pen++;
+    });
+    const total=g.members.length+1;
+    const isFloated=floatedEvIds.includes(ev.id)||seededForGroup.some(s=>s.evId===ev.id);
+    return{...ev,sup,cou,pas,pen,total,myV,isFloated};
+  });
+
+  // Apply sort
+  const sortLabel=groupSortBy==='floated'?'floated first, then most overlap':groupSortBy==='overlap'?'most overlap first':groupSortBy==='date'?'by date/time':'floated first';
+  if(groupSortBy==='floated'){
+    scored.sort((a,b)=>{if(a.isFloated!==b.isFloated)return a.isFloated?-1:1;return b.sup-a.sup||(b.cou-a.cou);});
+  } else if(groupSortBy==='overlap'){
+    scored.sort((a,b)=>b.sup-a.sup||(b.cou-a.cou));
+  } else {
+    scored.sort((a,b)=>{
+      if(!a.date&&!b.date)return 0;if(!a.date)return 1;if(!b.date)return -1;
+      return new Date(a.date)-new Date(b.date);
+    });
+  }
+
+  const allCollapsed=scored.length>0&&scored.every(e=>collapsedCards[openGroup]&&collapsedCards[openGroup].has(e.id));
+  let html=`<div class="back-btn" onclick="backToGroups()">‹ all groups</div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    <span style="font-size:24px;">${g.emoji}</span>
+    <span style="font-size:18px;font-weight:600;color:var(--gray-900);flex:1;">${g.name}</span>
+    <button onclick="openFloatToGroup('${openGroup}')" style="font-size:12px;font-weight:600;color:var(--purple);background:var(--purple-light);border:1px solid var(--purple-mid);border-radius:var(--r-full);padding:5px 12px;cursor:pointer;font-family:var(--font-main);">🌊 float</button>
+    <button onclick="openAddToGroup('${g.id}')" title="add member" style="font-size:12px;font-weight:600;color:var(--gray-700);background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--r-full);padding:5px 12px;cursor:pointer;font-family:var(--font-main);">＋ add member</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+    <span style="font-size:11px;color:var(--gray-500);">sorted by</span>
+    <select onchange="groupSortBy=this.value;renderGroupDetail()" style="font-size:11px;color:var(--purple);font-weight:600;border:1px solid var(--purple-mid);background:var(--purple-light);border-radius:var(--r-full);padding:3px 8px;cursor:pointer;font-family:var(--font-main);outline:none;">
+      <option value="floated" ${groupSortBy==='floated'?'selected':''}>🌊 floated first</option>
+      <option value="overlap" ${groupSortBy==='overlap'?'selected':''}>🔥 most overlap</option>
+      <option value="date" ${groupSortBy==='date'?'selected':''}>📅 date/time</option>
+    </select>
+  </div>
+  <div style="margin-bottom:14px;">
+    <button onclick="collapseAllCards('${openGroup}','${scored.map(e=>e.id).join(',')}')" style="font-size:11px;font-weight:500;color:var(--gray-500);background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--r-full);padding:3px 10px;cursor:pointer;font-family:var(--font-main);">${allCollapsed?'＋ expand all':'− collapse all'}</button>
+  </div>`;
+
+  // Hidden items restore section
+  if(hiddenItems.size>0){
+    html+=`<div style="font-size:12px;color:var(--gray-500);margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+      <span>${hiddenItems.size} hidden</span>
+      <span style="color:var(--purple);cursor:pointer;font-weight:500;" onclick="restoreHidden('${openGroup}')">show all</span>
+    </div>`;
+  }
+
+  if(!scored.length){html+=`<div style="text-align:center;padding:32px 0;color:var(--gray-500);font-size:14px;">all caught up 🎉 float something!</div>`;}
+
+  scored.forEach(ev=>{
+    const pct=Math.round(((ev.sup+ev.cou)/ev.total)*100);
+    const floaters=floaterMap[ev.id]||[];
+    const memberRows=[
+      {name:uName+' (you)',vote:ev.myV,isMe:true},
+      ...g.members.map(m=>({name:m,vote:gs[ev.id]?gs[ev.id][m]:'pending',isMe:false}))
+    ].sort((a,b)=>voteOrder(a.vote)-voteOrder(b.vote));
+
+    const floatedStyle=ev.isFloated
+      ?`border:2px solid var(--purple-mid);box-shadow:0 0 0 3px var(--purple-light),0 1px 3px rgba(0,0,0,.06);`
+      :``;
+
+    const cardId=`card-${ev.id}`;
+    const tableId=`dt-${ev.id}`;
+    const isCollapsed=collapsedCards[openGroup]&&collapsedCards[openGroup].has(ev.id);
+
+    if(isCollapsed){
+      html+=`<div class="overlap-card" style="${floatedStyle}padding:10px 14px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button onclick="toggleCardCollapse('${openGroup}','${ev.id}')" style="width:22px;height:22px;border-radius:50%;border:1px solid var(--gray-200);background:var(--gray-50);color:var(--gray-500);font-size:13px;cursor:pointer;font-family:var(--font-main);display:flex;align-items:center;justify-content:center;flex-shrink:0;">＋</button>
+          <span style="font-size:16px;">${ev.emoji}</span>
+          <span style="font-size:14px;font-weight:500;color:var(--gray-900);flex:1;">${ev.title}</span>
+          <span class="count-badge">🔥${ev.sup} ✦${ev.cou}</span>
+        </div>
+      </div>`;
+    } else {
+      html+=`<div class="overlap-card" style="${floatedStyle}">
+        <div class="overlap-header">
+          <button onclick="toggleCardCollapse('${openGroup}','${ev.id}')" title="minimize" style="width:22px;height:22px;border-radius:50%;border:1px solid var(--gray-200);background:var(--gray-50);color:var(--gray-500);font-size:14px;cursor:pointer;font-family:var(--font-main);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:4px;">−</button>
+          <span style="font-size:18px;">${ev.emoji}</span>
+          <div style="flex:1;min-width:0;">
+            <div class="overlap-name">${ev.title}</div>
+            ${floaters.length?`<div style="font-size:11px;color:var(--purple);font-style:italic;margin-top:1px;">🌊 floated by ${floaters.join(' & ')}</div>`:''}
+          </div>
+          <span class="count-badge">🔥${ev.sup} ✦${ev.cou}</span>
+        </div>
+        ${ev.dateLabel?`<div style="margin-bottom:8px;"><span class="event-date-badge">📅 ${ev.dateLabel}</span></div>`:''}
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+
+      memberRows.forEach(row=>{
+        const didFloat=groupFloatBy[ev.id]&&(groupFloatBy[ev.id].has(row.name)||(row.isMe&&groupFloatBy[ev.id].has(uName)));
+        const waveSuffix=didFloat?` <span style="font-size:11px;">🌊</span>`:'';
+        let overallPill;
+        if(row.vote==='super')overallPill=`<span class="pill pill-super">🔥 super</span>`;
+        else if(row.vote==='could')overallPill=`<span class="pill pill-could">✦ could</span>`;
+        else if(row.vote==='pass')overallPill=`<span class="pill pill-pass">✕ pass</span>`;
+        else if(row.isMe)overallPill=`<span class="pill pill-tap" onclick="openVoteModal('${ev.id}','${ev.title.replace(/'/g,"\\'")}')">tap to respond</span>`;
+        else{
+          const nk=`${row.name}_${ev.id}`;
+          const sent=nudgedSent[cu]&&nudgedSent[cu][nk];
+          overallPill=`<span class="pill pill-pending" style="margin-right:4px;">pending</span>`
+              +(sent
+                ?`<span class="pill" style="background:var(--green-light);color:#0F6E56;font-size:10px;">nudged 👋</span>`
+                :`<button onclick="doNudgeInline(event,'${nk}',this)" style="font-size:11px;font-weight:600;color:var(--purple);background:var(--purple-light);border:1px solid var(--purple-mid);border-radius:var(--r-full);padding:3px 9px;cursor:pointer;font-family:var(--font-main);">nudge 👋</button>`);
+        }
+        html+=`<div class="member-row" style="flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;width:100%;">
+            ${av(row.name.replace(' (you)','')+cu,'sm')}
+            <span class="member-name">${row.name}${waveSuffix}</span>
+            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-left:auto;">${overallPill}</div>
+          </div>
+        </div>`;
+      });
+
+      // Date availability TABLE — collapsible
+      const hasDates=ev.type==='activity'&&ev.dateOptions&&ev.dateOptions.length;
+      if(hasDates){
+        const dtCollapsed=collapsedDateTables[ev.id];
+        const allPeople=[{key:'me',label:uName+' (you)',isMe:true},...g.members.map(m=>({key:m,label:m,isMe:false}))];
+        let tHead=`<tr><th style="text-align:left;font-size:11px;color:var(--gray-500);font-weight:500;padding:4px 6px 4px 0;min-width:70px;"></th>`;
+        ev.dateOptions.forEach(d=>{
+          tHead+=`<th style="text-align:center;font-size:10px;color:var(--gray-700);font-weight:600;padding:4px 6px;white-space:nowrap;">${d.replace(' · ','<br>')}</th>`;
+        });
+        tHead+=`<th></th></tr>`;
+        let tBody='';
+        allPeople.forEach(person=>{
+          const dv=(dateVotes[cu][ev.id]&&dateVotes[cu][ev.id][person.key])||{};
+          const hasAnyQ=ev.dateOptions.some((_,i)=>!dv[i]||dv[i]===null);
+          const nk=`date_${person.key}_${ev.id}`;
+          const dateSent=nudgedSent[cu]&&nudgedSent[cu][nk];
+          tBody+=`<tr><td style="font-size:11px;color:var(--gray-700);padding:4px 8px 4px 0;white-space:nowrap;max-width:70px;overflow:hidden;text-overflow:ellipsis;">${person.label}</td>`;
+          ev.dateOptions.forEach((_,i)=>{
+            const v=dv[i];
+            let cell;
+            if(person.isMe){
+              const yS=v==='yes'?'background:#1DB97A;color:white;':'background:var(--gray-100);color:var(--gray-500);';
+              const nS=v==='no'?'background:#F04E4E;color:white;':'background:var(--gray-100);color:var(--gray-500);';
+              cell=`<div style="display:flex;gap:3px;justify-content:center;">
+                <button onclick="setDateAvail('${ev.id}',${i},'yes')" id="dav-yes-${ev.id}-${i}" style="padding:3px 6px;border-radius:4px;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font-main);${yS}">✓</button>
+                <button onclick="setDateAvail('${ev.id}',${i},'no')" id="dav-no-${ev.id}-${i}" style="padding:3px 6px;border-radius:4px;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font-main);${nS}">✕</button>
+              </div>`;
+            } else {
+              cell=v==='yes'
+                ?`<div style="text-align:center;font-size:14px;color:#1DB97A;">✓</div>`
+                :v==='no'
+                ?`<div style="text-align:center;font-size:14px;color:#F04E4E;">✕</div>`
+                :`<div style="text-align:center;font-size:13px;color:var(--gray-300);">?</div>`;
+            }
+            tBody+=`<td style="padding:4px 6px;vertical-align:middle;">${cell}</td>`;
+          });
+          // Nudge if any ? — for non-me people
+          tBody+=`<td style="padding:4px 0 4px 4px;">`;
+          if(!person.isMe&&hasAnyQ){
+            tBody+=dateSent
+              ?`<span style="font-size:10px;color:#0F6E56;font-weight:600;">nudged 👋</span>`
+              :`<button onclick="doNudgeInline(event,'${nk}',this)" style="font-size:10px;font-weight:600;color:var(--purple);background:var(--purple-light);border:1px solid var(--purple-mid);border-radius:var(--r-full);padding:2px 7px;cursor:pointer;font-family:var(--font-main);white-space:nowrap;">nudge 👋</button>`;
+          }
+          tBody+=`</td></tr>`;
+        });
+
+        html+=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--gray-100);">
+          <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:${dtCollapsed?0:6}px;" onclick="toggleDateTable('${ev.id}')">
+            <span style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;">📅 date availability</span>
+            <span id="dta-${ev.id}" style="font-size:12px;color:var(--gray-400);">${dtCollapsed?'▼':'▲'}</span>
+          </div>
+          <div id="${tableId}" style="display:${dtCollapsed?'none':'block'};overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">${tHead}${tBody}</table>
+          </div>
+        </div>`;
+      } // end if(hasDates)
+
+      // Build date summary for text message
+      const datesSummary=hasDates?buildDateSummary(ev,g.members):null;
+      const isActivity=ev.type==='activity';
+      html+=`<div class="oa-row" style="flex-wrap:wrap;gap:6px;">
+        <button class="oa-btn text-btn" onclick="openTextDraft('${ev.title.replace(/'/g,"\\'")}','${g.name.replace(/'/g,"\\'")}','${g.members.join(',').replace(/'/g,"\\'")}',${ev.sup},${ev.sup+ev.cou},${ev.total},'${ev.id}')">💬 text group</button>
+        ${isActivity?`<button class="oa-btn" style="color:var(--purple);border-color:var(--purple-mid);background:var(--purple-light);" onclick="openProposeDates('${ev.id}','${g.id}')">📅 propose dates</button>`:''}
+        <button class="oa-btn dismiss-btn" onclick="dismiss('${openGroup}','${ev.id}')">dismiss</button>
+      </div></div>`;
+    }
+  });
+
+  html+=`<div class="add-row" onclick="openFloatToGroup('${openGroup}')"><span style="font-size:18px;">🌊</span> float something to ${g.name}</div>`;
+  document.getElementById('content').innerHTML=html;
+}
+
+function hideItem(gid,evId){
+  if(!dismissedItems[cu][gid])dismissedItems[cu][gid]=new Set();
+  dismissedItems[cu][gid].add(evId);
+  renderGroupDetail();
+}
+function restoreHidden(gid){
+  dismissedItems[cu][gid]=new Set();
+  renderGroupDetail();
+}
+
+function openAddToGroup(gid){
+  const g=GROUPS[cu].find(x=>x.id===gid);
+  // All contacts not already in this group
+  const allContacts=[...new Set(GROUPS[cu].flatMap(grp=>grp.members))].filter(m=>!g.members.includes(m));
+  window._selMember=null;
+  const chips=allContacts.map(c=>`<div class="contact-chip" id="atg-${c.replace(/[\s']/g,'_')}" onclick="selectMemberToAdd('${c.replace(/'/g,"\\'")}')">${c}</div>`).join('');
+  showOverlay(`
+    <div class="modal-title">＋ add member to ${g.name}</div>
+    <div style="font-size:12px;color:var(--purple);background:var(--purple-light);border-radius:var(--r-md);padding:10px 12px;margin-bottom:14px;line-height:1.5;">
+      💡 once added, their interests will automatically appear on this group's moves below
+    </div>
+    ${allContacts.length?`<label>pick from existing friends</label><div class="chip-group" style="margin-bottom:12px;">${chips}</div>`:''}
+    <label>or add someone new</label>
+    <input class="input-field" id="new-member-name" placeholder="their name" oninput="window._selMember=null;document.querySelectorAll('.contact-chip').forEach(c=>c.classList.remove('sel'))" />
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeOverlay()">cancel</button>
+      <button class="mbtn mbtn-primary" onclick="addToGroup('${gid}')">add</button>
+    </div>
+  `);
+}
+
+function selectMemberToAdd(name){
+  window._selMember=name;
+  document.querySelectorAll('.contact-chip').forEach(c=>c.classList.remove('sel'));
+  const el=document.getElementById('atg-'+name.replace(/[\s']/g,'_'));
+  if(el)el.classList.add('sel');
+  const inp=document.getElementById('new-member-name');
+  if(inp)inp.value='';
+}
+
+function addToGroup(gid){
+  const inp=document.getElementById('new-member-name');
+  const name=(window._selMember)||(inp&&inp.value.trim())||'';
+  if(!name)return;
+  const g=GROUPS[cu].find(x=>x.id===gid);
+  if(!g.members.includes(name))g.members.push(name);
+  const gs=groupSeed[cu][gid];
+  getEvents(cu).forEach(e=>{
+    if(gs[e.id]&&!gs[e.id][name]){const r=Math.random();gs[e.id][name]=r<0.38?'super':r<0.55?'could':r<0.7?'pass':'pending';}
+  });
+  window._selMember=null;
+  closeOverlay();renderGroupDetail();
+}
+
+function doNudgeInline(e,nudgeKey,el){
+  e.stopPropagation();
+  if(!nudgedSent[cu])nudgedSent[cu]={};
+  nudgedSent[cu][nudgeKey]=true;
+  el.textContent='nudged 👋';
+  el.className='pill';
+  el.style.background='var(--green-light)';el.style.color='#0F6E56';el.style.cursor='default';
+  el.onclick=null;
+}
+
+function openVoteModal(evId,evTitle){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  const hasDateOpts=ev&&ev.type==='activity'&&ev.dateOptions&&ev.dateOptions.length;
+  if(hasDateOpts){
+    // First pick overall interest, then offer dates
+    showOverlay(`
+      <div class="modal-title">how interested are you?</div>
+      <div class="modal-sub" style="margin-bottom:20px;">${evTitle}</div>
+      <div class="vote3-row" style="flex-direction:column;gap:10px;">
+        <button class="v3btn super" style="padding:12px;" onclick="castVoteThenDates('${evId}','super')">🔥 super interested</button>
+        <button class="v3btn could" style="padding:12px;" onclick="castVoteThenDates('${evId}','could')">✦ could be down</button>
+        <button class="v3btn pass" style="padding:12px;" onclick="castVote('${evId}','pass')">✕ pass</button>
+      </div>
+      <div style="text-align:center;margin-top:12px;"><span style="font-size:12px;color:var(--gray-500);cursor:pointer;" onclick="closeOverlay()">not now</span></div>
+    `);
+  } else {
+    showOverlay(`
+      <div class="modal-title">how interested are you?</div>
+      <div class="modal-sub" style="margin-bottom:20px;">${evTitle}</div>
+      <div class="vote3-row" style="flex-direction:column;gap:10px;">
+        <button class="v3btn super" style="padding:12px;" onclick="castVote('${evId}','super')">🔥 super interested</button>
+        <button class="v3btn could" style="padding:12px;" onclick="castVote('${evId}','could')">✦ could be down</button>
+        <button class="v3btn pass" style="padding:12px;" onclick="castVote('${evId}','pass')">✕ pass</button>
+      </div>
+      <div style="text-align:center;margin-top:12px;"><span style="font-size:12px;color:var(--gray-500);cursor:pointer;" onclick="closeOverlay()">not now</span></div>
+    `);
+  }
+}
+
+function castVoteThenDates(evId, v){
+  votes[cu][evId]=v;
+  if(v==='pass') setAllDatesPass(evId);
+  closeOverlay();
+  if(openGroup) renderGroupDetail();
+  else renderExplore();
+}
+
+function openDateAvailModal(evId){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  if(!ev||!ev.dateOptions) return;
+  const floaterName=ev.floatedBy||'someone';
+  const myDV=dateVotes[cu][evId]&&dateVotes[cu][evId]['me']||{};
+  const dateRows=ev.dateOptions.map((d,i)=>{
+    const v=myDV[i]||null;
+    return `<div style="border:1px solid var(--gray-200);border-radius:var(--r-md);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:500;color:var(--gray-900);">📅 ${d}</div>
+      </div>
+      <button id="dav-yes-${i}" onclick="setDateAvail('${evId}',${i},'yes')" style="padding:5px 14px;border-radius:var(--r-full);font-size:12px;font-weight:600;border:1.5px solid ${v==='yes'?'var(--green)':'var(--gray-200)'};background:${v==='yes'?'var(--green-light)':'var(--gray-50)'};color:${v==='yes'?'#0F6E56':'var(--gray-500)'};cursor:pointer;font-family:var(--font-main);transition:all .12s;">✓ works</button>
+      <button id="dav-no-${i}" onclick="setDateAvail('${evId}',${i},'no')" style="padding:5px 14px;border-radius:var(--r-full);font-size:12px;font-weight:600;border:1.5px solid ${v==='no'?'var(--red)':'var(--gray-200)'};background:${v==='no'?'var(--red-light)':'var(--gray-50)'};color:${v==='no'?'#A32D2D':'var(--gray-500)'};cursor:pointer;font-family:var(--font-main);transition:all .12s;">✕ can't</button>
+    </div>`;
+  }).join('');
+  showOverlay(`
+    <div class="modal-title">${ev.emoji} ${ev.title}</div>
+    <div style="font-size:13px;color:var(--gray-500);margin-bottom:16px;line-height:1.5;">
+      <strong>${floaterName}</strong> suggested ${ev.dateOptions.length} date options — mark your availability for each, or skip for now.
+    </div>
+    ${dateRows}
+    <div class="modal-btns" style="margin-top:14px;">
+      <button class="mbtn mbtn-cancel" onclick="closeOverlay();if(openGroup)renderGroupDetail();else renderExplore()">skip for now</button>
+      <button class="mbtn mbtn-primary" onclick="saveDateAvail('${evId}')">save</button>
+    </div>
+  `);
+}
+
+function viewInGroup(gid,evId){
+  currentTab='friends';
+  openGroup=gid;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab==='friends'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.id==='nav-friends'));
+  renderGroupDetail();
+  // Scroll to the card after render
+  setTimeout(()=>{const el=document.getElementById('card-'+evId);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},150);
+}
+
+function setDateAvail(evId,i,v){
+  if(!dateVotes[cu][evId]) dateVotes[cu][evId]={};
+  if(!dateVotes[cu][evId]['me']) dateVotes[cu][evId]['me']={};
+  dateVotes[cu][evId]['me'][i] = dateVotes[cu][evId]['me'][i]===v ? null : v;
+  const curV=dateVotes[cu][evId]['me'][i];
+  // Update modal buttons (openDateAvailModal style)
+  const yesModal=document.getElementById(`dav-yes-${i}`);
+  const noModal=document.getElementById(`dav-no-${i}`);
+  if(yesModal){yesModal.style.borderColor=curV==='yes'?'var(--green)':'var(--gray-200)';yesModal.style.background=curV==='yes'?'var(--green-light)':'var(--gray-50)';yesModal.style.color=curV==='yes'?'#0F6E56':'var(--gray-500)';}
+  if(noModal){noModal.style.borderColor=curV==='no'?'var(--red)':'var(--gray-200)';noModal.style.background=curV==='no'?'var(--red-light)':'var(--gray-50)';noModal.style.color=curV==='no'?'#A32D2D':'var(--gray-500)';}
+  // Update table buttons
+  const yesTable=document.getElementById(`dav-yes-${evId}-${i}`);
+  const noTable=document.getElementById(`dav-no-${evId}-${i}`);
+  const skipBtn=document.getElementById(`dav-skip-${evId}-${i}`);
+  if(yesTable){yesTable.style.background=curV==='yes'?'#1DB97A':'var(--gray-100)';yesTable.style.color=curV==='yes'?'white':'var(--gray-500)';}
+  if(noTable){noTable.style.background=curV==='no'?'#F04E4E':'var(--gray-100)';noTable.style.color=curV==='no'?'white':'var(--gray-500)';}
+  // Reset ? button when ✓/✕ is picked
+  if(skipBtn&&curV){
+    skipBtn.style.borderColor='var(--gray-200)';skipBtn.style.background='white';skipBtn.style.color='var(--gray-400)';skipBtn.style.fontWeight='500';
+  }
+}
+
+function saveDateAvail(evId){
+  closeOverlay();
+  openGroup?renderGroupDetail():renderExplore();
+}
+
+function castVote(evId,v){
+  votes[cu][evId]=votes[cu][evId]===v?null:v;
+  if(votes[cu][evId]==='pass') setAllDatesPass(evId);
+  closeOverlay();
+  if(openGroup) renderGroupDetail();
+  else renderExplore();
+}
+
+function openTextDraft(evTitle,groupName,membersStr,superCount,downCount,totalCount,evId){
+  const members=membersStr.split(',');
+  const ev=evId?getEvents(cu).find(e=>e.id===evId):null;
+  const dateSum=ev?buildDateSummary(ev,members):null;
+  let msg=`hey y'all, saw we have ${downCount}/${totalCount} overlap for ${evTitle} — who's down? 👀`;
+  if(dateSum) msg+=`\n\ndate availability:\n${dateSum}`;
+  showOverlay(`
+    <div class="modal-title">💬 text ${groupName}</div>
+    <div class="modal-sub">to: ${members.join(', ')}</div>
+    <textarea class="input-field" id="sms-draft" style="height:${dateSum?'140':'80'}px;resize:none;margin-bottom:6px;">${msg}</textarea>
+    <div style="font-size:11px;color:var(--gray-500);margin-bottom:14px;">opens your messages app pre-filled</div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeOverlay()">cancel</button>
+      <button class="mbtn mbtn-primary" onclick="sendText()">open in messages</button>
+    </div>
+  `);
+}
+function sendText(){const b=document.getElementById('sms-draft').value;window.open('sms:&body='+encodeURIComponent(b),'_blank');closeOverlay();}
+
+function openFloatToGroup(gid){
+  const evs=getEvents(cu);
+  const g=GROUPS[cu].find(x=>x.id===gid);
+  const opts=`<option value="__custom__">✏️ type your own...</option>`+evs.map(e=>`<option value="${e.id}" data-type="${e.type}" data-date="${e.dateLabel||''}">${e.emoji} ${e.title}${e.dateLabel?' ('+e.dateLabel+')':''}</option>`).join('');
+  showOverlay(`
+    <div class="modal-title">🌊 float to ${g.name}</div>
+    <div class="modal-sub">pick something to share with this group</div>
+    <label>event or activity</label>
+    <select class="input-field" id="float-ev" onchange="onFloatEvChange()">${opts}</select>
+    <div id="float-date-section"></div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeOverlay()">cancel</button>
+      <button class="mbtn mbtn-primary" onclick="confirmFloat('${gid}')">float it 🌊</button>
+    </div>
+  `);
+  onFloatEvChange();
+}
+
+function onFloatEvChange(){
+  const sel=document.getElementById('float-ev');
+  if(!sel)return;
+  const evId=sel.value;
+  const sec=document.getElementById('float-date-section');
+  if(!sec)return;
+  if(evId==='__custom__'){
+    sec.innerHTML=`<input class="input-field" id="custom-ev-title" placeholder="activity name" style="margin-bottom:6px;" />
+      <label>category</label>
+      <select class="input-field" id="custom-ev-cat">${ALL_CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+      <label>suggest date options — optional</label>
+      <input class="input-field" id="float-date1" placeholder="Option 1: e.g. Jun 14 · 7pm" style="margin-bottom:6px;" />
+      <input class="input-field" id="float-date2" placeholder="Option 2 — optional" style="margin-bottom:6px;" />
+      <input class="input-field" id="float-date3" placeholder="Option 3 — optional" />`;
+    return;
+  }
+  const opt=sel.options[sel.selectedIndex];
+  const type=opt.getAttribute('data-type');
+  const dateLabel=opt.getAttribute('data-date');
+  if(type==='event'){
+    sec.innerHTML=dateLabel
+      ?`<div style="font-size:13px;color:var(--gray-500);padding:6px 0 10px;">📅 ${dateLabel} — date auto-included</div>`:'';
+  } else {
+    const ev=getEvents(cu).find(e=>e.id===evId);
+    const existing=(ev&&ev.dateOptions)||[];
+    const existingHtml=existing.length?`<div style="font-size:11px;color:var(--gray-500);margin-bottom:6px;">already proposed: ${existing.join(', ')}</div>`:'';
+    sec.innerHTML=`${existingHtml}<label>suggest date options — optional</label>
+      <input class="input-field" id="float-date1" placeholder="Option 1: e.g. Jun 14 · 7pm" style="margin-bottom:6px;" />
+      <input class="input-field" id="float-date2" placeholder="Option 2 — optional" style="margin-bottom:6px;" />
+      <input class="input-field" id="float-date3" placeholder="Option 3 — optional" />`;
+  }
+}
+
+function confirmFloat(gid){
+  const sel=document.getElementById('float-ev');
+  let evId=sel.value;
+  const g=GROUPS[cu].find(x=>x.id===gid);
+
+  if(evId==='__custom__'){
+    const title=(document.getElementById('custom-ev-title').value||'').trim();
+    if(!title){alert('add a title!');return;}
+    const cat=(document.getElementById('custom-ev-cat')&&document.getElementById('custom-ev-cat').value)||ALL_CATS[0];
+    const newDates=['float-date1','float-date2','float-date3'].map(id=>{const el=document.getElementById(id);return el?el.value.trim():'';}).filter(Boolean);
+    const newEv={id:'custom'+Date.now(),type:'activity',emoji:'⭐',title,cat,floatedBy:null,...(newDates.length?{dateOptions:newDates}:{})};
+    (cu==='james'||cu==='rads')?SEA_EVENTS.push(newEv):cu==='default'?NYC_EVENTS.push(newEv):SF_EVENTS.push(newEv);
+    votes[cu][newEv.id]=null;
+    GROUPS[cu].forEach(gr=>{if(!groupSeed[cu]||!groupSeed[cu][gr.id])return;groupSeed[cu][gr.id][newEv.id]={};gr.members.forEach(m=>{const r=Math.random();groupSeed[cu][gr.id][newEv.id][m]=r<0.38?'super':r<0.55?'could':r<0.7?'pass':'pending';});});
+    evId=newEv.id;
+  }
+
+  if(!groupFloats[cu][gid])groupFloats[cu][gid]=[];
+  if(!groupFloats[cu][gid].includes(evId))groupFloats[cu][gid].push(evId);
+  if(groupSeed[cu][gid]&&!groupSeed[cu][gid][evId]){
+    groupSeed[cu][gid][evId]={};
+    g.members.forEach(m=>{const r=Math.random();groupSeed[cu][gid][evId][m]=r<0.38?'super':r<0.55?'could':r<0.7?'pass':'pending';});
+  }
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  if(ev&&ev.type==='activity'){
+    const newDates=['float-date1','float-date2','float-date3'].map(id=>{const el=document.getElementById(id);return el?el.value.trim():'';}).filter(Boolean);
+    if(newDates.length){if(!ev.dateOptions)ev.dateOptions=[];newDates.forEach(d=>{if(!ev.dateOptions.includes(d))ev.dateOptions.push(d);});}
+  }
+  closeOverlay();renderFriends();
+}
+
+function openAddGroup(){
+  const contacts=[...new Set(GROUPS[cu].flatMap(g=>g.members))];
+  window._sel=[];
+  const chips=contacts.map(c=>`<div class="contact-chip" id="chip-${c.replace(/[\s']/g,'_')}" onclick="toggleContact('${c.replace(/'/g,"\\'")}')">${c}</div>`).join('');
+  showOverlay(`
+    <div class="modal-title">new group</div>
+    <input class="input-field" id="gname" placeholder="group name" />
+    <label>add from contacts</label>
+    <div class="chip-group" id="chip-wrap">${chips}</div>
+    <input class="input-field" id="newc" placeholder="+ add new contact" onkeydown="if(event.key==='Enter'){addNewC();event.preventDefault();}"/>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeOverlay()">cancel</button>
+      <button class="mbtn mbtn-primary" onclick="saveGroup()">create</button>
+    </div>
+  `);
+}
+function toggleContact(name){const k=name.replace(/[\s']/g,'_');const el=document.getElementById('chip-'+k);const i=window._sel.indexOf(name);if(i===-1){window._sel.push(name);el&&el.classList.add('sel');}else{window._sel.splice(i,1);el&&el.classList.remove('sel');}}
+function addNewC(){const inp=document.getElementById('newc');const n=inp.value.trim();if(!n)return;if(!window._sel.includes(n))window._sel.push(n);const c=document.createElement('div');c.className='contact-chip sel';c.textContent=n;document.getElementById('chip-wrap').appendChild(c);inp.value='';}
+function saveGroup(){
+  const name=(document.getElementById('gname').value.trim())||'new group';
+  const members=[...window._sel];
+  if(!members.length){alert('add at least one member!');return;}
+  const emojis=['🌟','🎯','🏄','🎪','🌈','🎸','🍀','🦋'];
+  const newG={id:'grp'+Date.now(),name,emoji:emojis[Math.floor(Math.random()*emojis.length)],members};
+  GROUPS[cu].push(newG);
+  groupSeed[cu][newG.id]={};groupFloats[cu][newG.id]=[];
+  getEvents(cu).forEach(e=>{groupSeed[cu][newG.id][e.id]={};members.forEach(m=>{const r=Math.random();groupSeed[cu][newG.id][e.id][m]=r<0.38?'super':r<0.55?'could':r<0.7?'pass':'pending';});});
+  closeOverlay();renderFriends();
+}
+
+// ── EXPLORE ──────────────────────────────────────────────────
+function renderExplore(){
+  const allEvs=getEvents(cu);
+  let filtered=allEvs.filter(e=>e.type===exploreType);
+  if(catFilter!=='all')filtered=filtered.filter(e=>e.cat===catFilter);
+  if(exploreType==='event'){
+    if(dateFilter==='this weekend')filtered=filtered.filter(e=>e.date&&(()=>{const d=new Date(e.date),mo=d.getMonth(),day=d.getDate();return(mo===5&&day>=7&&day<=8);})());
+    else if(dateFilter==='this month')filtered=filtered.filter(e=>e.date&&new Date(e.date).getMonth()===5);
+    filtered.sort((a,b)=>a.date&&b.date?new Date(a.date)-new Date(b.date):0);
+  }
+
+  // Floated by friends section (others' floatedBy, not mine)
+  const myName=USERS[cu].name;
+  const myContacts=new Set(GROUPS[cu].flatMap(g=>g.members));
+  const floatedByFriends=allEvs.filter(e=>e.type===exploreType&&getFloatedBy(e.id)&&(catFilter==='all'||e.cat===catFilter)&&!(dismissedFloated[cu]&&dismissedFloated[cu].has(e.id)));
+
+  const catChips=['all',...ALL_CATS].map(c=>`<div class="fchip ${catFilter===c?'active':''}" onclick="setCat('${c}')">${c==='all'?'✦ all':c}</div>`).join('');
+  let dateHtml='';
+  if(exploreType==='event')dateHtml=`<div class="filter-row">${['all','this weekend','this month'].map(d=>`<div class="fchip ${dateFilter===d?'active':''}" onclick="setDate('${d}')">${d}</div>`).join('')}</div>`;
+
+  let html=`<div style="font-size:12px;color:var(--gray-500);margin-bottom:10px;">📍 ${USERS[cu].city}</div>
+  <div class="type-toggle">
+    <div class="type-btn ${exploreType==='event'?'active':''}" onclick="setType('event')">📅 events</div>
+    <div class="type-btn ${exploreType==='activity'?'active':''}" onclick="setType('activity')">🎯 activities</div>
+  </div>
+  <div style="font-size:11px;color:var(--gray-500);margin:-8px 0 12px;line-height:1.5;">
+    ${exploreType==='event'?'<strong>events</strong> have a set date & time':'<strong>activities</strong> are open-ended — no date/time needed'}
+  </div>
+  ${dateHtml}
+  <div class="filter-row">${catChips}</div>`;
+
+  // Floated by friends section
+  if(floatedByFriends.length){
+    const validFloated=floatedByFriends.filter(e=>getFloatedBy(e.id));
+    const allPending=validFloated.filter(e=>!votes[cu][e.id]);
+    const allResponded=validFloated.filter(e=>!!votes[cu][e.id]);
+    const pendingShow=allPending.slice(0,2);
+    const pendingHidden=allPending.length-pendingShow.length;
+
+    function floatedChip(ev, showInlineVote){
+      const catC=CAT_COLORS[ev.cat]||{bg:'#F0EEE9'};
+      const myV=votes[cu][ev.id];
+      const voteLabel=myV==='super'?'🔥 super interested':myV==='could'?'✦ could be down':myV==='pass'?'✕ pass':null;
+
+      // Group label
+      const seededGroups=GROUPS[cu].filter(g=>{
+        const sf=(SEEDED_FLOATS[cu]&&SEEDED_FLOATS[cu][g.id])||[];
+        return sf.some(s=>s.evId===ev.id&&!s.floaters.includes('you'));
+      }).map(g=>g.name);
+      const runtimeGroups=GROUPS[cu].filter(g=>groupFloats[cu]&&groupFloats[cu][g.id]&&groupFloats[cu][g.id].includes(ev.id)).map(g=>g.name);
+      const allGroupNames=[...new Set([...seededGroups,...runtimeGroups])];
+      const soloSeededGroup=GROUPS[cu].find(g=>{
+        const sf=(SEEDED_FLOATS[cu]&&SEEDED_FLOATS[cu][g.id])||[];
+        return g.members.length===1&&sf.some(s=>s.evId===ev.id);
+      });
+      let groupLabel;
+      if(soloSeededGroup) groupLabel=` to <strong>you</strong>`;
+      else if(allGroupNames.length) groupLabel=` to <strong>${allGroupNames.slice(0,2).join(' & ')}</strong>`;
+      else groupLabel=` to <strong>${GROUPS[cu][0].name}</strong>`;
+
+      const hasDO=ev.type==='activity'&&ev.dateOptions&&ev.dateOptions.length;
+      const myDV=(dateVotes[cu][ev.id]&&dateVotes[cu][ev.id]['me'])||{};
+
+      // Status pill (top-right)
+      const statusPill=voteLabel
+        ?`<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);background:${myV==='super'?'#E8F5E9':myV==='could'?'var(--amber-light)':'var(--red-light)'};color:${myV==='super'?'#1B6B2E':myV==='could'?'#8C5100':'#A32D2D'};">${voteLabel}</span>`:
+        `<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);background:var(--amber-light);color:#8C5100;">respond 👆</span>`;
+
+      // Vote buttons for pending
+      const inlineVote=showInlineVote&&!myV?`
+        <div class="vote3-row" style="margin-top:10px;" onclick="event.stopPropagation()">
+          <button class="v3btn" onclick="castVoteThenDates('${ev.id}','super')">🔥 super</button>
+          <button class="v3btn" onclick="castVoteThenDates('${ev.id}','could')">✦ could</button>
+          <button class="v3btn" onclick="castVote('${ev.id}','pass');renderExplore()">✕ pass</button>
+        </div>`:'';
+
+      // Date rows — always show interactive for pending, read-only for responded
+      let dateSect='';
+      if(hasDO){
+        if(showInlineVote){
+          // Show dates with ✓/✕ buttons always (even before voting — so you can see what dates exist)
+          dateSect=`<div style="margin-top:${myV?'8':'10'}px;padding-top:8px;border-top:1px solid var(--purple-light);" onclick="event.stopPropagation()">
+            <div style="font-size:10px;font-weight:600;color:var(--gray-500);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px;">📅 proposed dates</div>
+            ${ev.dateOptions.map((d,i)=>{
+              const v=myDV[i];
+              return`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                <span style="font-size:12px;color:var(--gray-700);flex:1;">📅 ${d}</span>
+                <button onclick="setDateAvail('${ev.id}',${i},'yes')" id="dav-yes-${ev.id}-${i}" style="padding:4px 10px;border-radius:var(--r-full);border:1.5px solid ${v==='yes'?'var(--green)':'var(--gray-200)'};background:${v==='yes'?'var(--green-light)':'white'};color:${v==='yes'?'#0F6E56':'var(--gray-500)'};font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-main);">✓</button>
+                <button onclick="setDateAvail('${ev.id}',${i},'no')" id="dav-no-${ev.id}-${i}" style="padding:4px 10px;border-radius:var(--r-full);border:1.5px solid ${v==='no'?'var(--red)':'var(--gray-200)'};background:${v==='no'?'var(--red-light)':'white'};color:${v==='no'?'#A32D2D':'var(--gray-500)'};font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-main);">✕</button>
+                <button onclick="skipDateAvail('${ev.id}',${i},this)" id="dav-skip-${ev.id}-${i}" style="padding:4px 8px;border-radius:var(--r-full);border:1.5px solid ${!v?'var(--purple-mid)':'var(--gray-200)'};background:${!v?'var(--purple-light)':'white'};color:${!v?'var(--purple)':'var(--gray-400)'};font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-main);">?</button>
+              </div>`;
+            }).join('')}
+          </div>`;
+        } else if(myV&&myV!=='pass'){
+          // Responded section: read-only dates
+          dateSect=`<div style="margin-top:6px;" onclick="event.stopPropagation()">
+            ${ev.dateOptions.map((d,i)=>{const v=myDV[i];return`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+              <span style="font-size:11px;color:var(--gray-500);">📅 ${d}</span>
+              ${v==='yes'?`<span style="font-size:10px;font-weight:600;color:#0F6E56;background:var(--green-light);padding:1px 8px;border-radius:var(--r-full);">✓ works</span>`:v==='no'?`<span style="font-size:10px;font-weight:600;color:#A32D2D;background:var(--red-light);padding:1px 8px;border-radius:var(--r-full);">✕ can't</span>`:`<span style="font-size:10px;color:var(--gray-500);background:var(--gray-100);padding:1px 8px;border-radius:var(--r-full);">?</span>`}
+            </div>`;}).join('')}
+          </div>`;
+        }
+      }
+
+      // Find target group for "view in group" button (responded chips only)
+      const targetGroup=!showInlineVote&&myV&&myV!=='pass'?(
+        GROUPS[cu].find(g=>groupFloats[cu]&&groupFloats[cu][g.id]&&groupFloats[cu][g.id].includes(ev.id))||
+        GROUPS[cu].find(g=>{const sf=(SEEDED_FLOATS[cu]&&SEEDED_FLOATS[cu][g.id])||[];return sf.some(s=>s.evId===ev.id);})
+      ):null;
+      const viewInGroupBtn=targetGroup
+        ?`<div style="margin-top:8px;" onclick="event.stopPropagation()">
+            <button onclick="viewInGroup('${targetGroup.id}','${ev.id}')" style="font-size:12px;font-weight:600;color:var(--purple);background:var(--purple-light);border:1px solid var(--purple-mid);border-radius:var(--r-full);padding:5px 14px;cursor:pointer;font-family:var(--font-main);">view in group →</button>
+          </div>`:'';
+
+      return `<div style="background:white;border-radius:var(--r-lg);padding:12px 14px;margin-bottom:8px;border:1px solid var(--purple-mid);box-shadow:var(--shadow-sm);" onclick="openEventDetail('${ev.id}')">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="width:36px;height:36px;border-radius:10px;background:${catC.bg};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${ev.emoji}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:500;color:var(--gray-900);line-height:1.3;">${ev.title}</div>
+            <div style="font-size:11px;color:var(--purple);font-style:italic;margin-top:2px;">🌊 floated by ${getFloatedBy(ev.id)||ev.floatedBy}${groupLabel}</div>
+            ${ev.dateLabel?`<div class="event-date-badge" style="margin-top:4px;">📅 ${ev.dateLabel}</div>`:''}
+          </div>
+          <div onclick="event.stopPropagation();">${statusPill}</div>
+        </div>
+        ${dateSect}
+        ${inlineVote}
+        ${viewInGroupBtn||''}
+      </div>`;
+    }
+
+    html+=`<div class="floated-section">
+      <div class="floated-section-header">
+        <span style="font-size:16px;">🌊</span>
+        <span class="floated-section-label">floated by your friends</span>
+      </div>
+      <div style="font-size:10px;font-weight:700;color:#8C5100;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">needs your response (${allPending.length})</div>`;
+
+    if(allPending.length===0){
+      html+=`<div style="font-size:12px;color:var(--gray-500);padding:6px 0;font-style:italic;">all caught up ✓</div>`;
+    } else {
+      pendingShow.forEach(ev=>{ html+=floatedChip(ev, true); });
+      if(pendingHidden>0) html+=`<div id="pending-more-btn" style="font-size:12px;color:var(--purple);cursor:pointer;text-align:center;padding:6px 0;font-weight:500;" onclick="expandPendingFloats()">＋${pendingHidden} more to respond to</div>
+        <div id="pending-more-list" style="display:none;">${allPending.slice(2).map(ev=>floatedChip(ev,true)).join('')}<div style="font-size:12px;color:var(--gray-500);cursor:pointer;text-align:center;padding:4px 0;font-weight:500;" onclick="collapsePendingFloats()">see less ▲</div></div>`;
+    }
+
+    const colId='responded-collapse-'+exploreType;
+    html+=`<div style="margin-top:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 0;" onclick="toggleCollapse('${colId}')">
+        <span style="font-size:10px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;">responded (${allResponded.length})</span>
+        <span id="${colId}-arrow" style="font-size:12px;color:var(--gray-500);">▼</span>
+      </div>
+      <div id="${colId}" style="display:none;">
+        ${allResponded.length?allResponded.map(ev=>floatedChip(ev,false)).join(''):`<div style="font-size:12px;color:var(--gray-500);padding:6px 0;font-style:italic;">nothing yet</div>`}
+      </div>
+    </div></div>`;
+  }
+
+  // Float button ABOVE the main list
+  html+=`<div class="add-row" onclick="openAddEvent()"><span style="font-size:20px;">＋</span> add ${exploreType==='event'?'an event':'an activity'}</div>`;
+
+  html+=`<div class="sec-label">${exploreType==='event'?'upcoming events':'things to do'}</div>`;
+  const mainList=filtered.filter(e=>!e.floatedBy||e.floatedBy===myName);
+  if(!mainList.length)html+=`<div style="text-align:center;padding:20px 0;color:var(--gray-500);font-size:14px;">nothing here yet</div>`;
+
+  mainList.forEach(ev=>{
+    const v=votes[cu][ev.id];
+    const catC=CAT_COLORS[ev.cat]||{bg:'#F0EEE9'};
+    const floatedToGroupNames=GROUPS[cu]
+      .filter(g=>groupFloats[cu]&&groupFloats[cu][g.id]&&groupFloats[cu][g.id].includes(ev.id))
+      .map(g=>g.name);
+    const selfFloatBadge=floatedToGroupNames.length
+      ?`<div style="font-size:11px;color:var(--purple);margin-top:4px;font-style:italic;">🌊 floated by you to ${floatedToGroupNames.join(' & ')}</div>`:'';
+    const hasDateOpts=ev.type==='activity'&&ev.dateOptions&&ev.dateOptions.length;
+    const voteRow=hasDateOpts
+      ?`<button class="v3btn" style="width:100%;background:var(--purple-light);color:var(--purple);border-color:var(--purple-mid);font-size:13px;" onclick="event.stopPropagation();openDateVoteModal('${ev.id}')">${v?'✏️ update response':'📅 pick a date & respond'}</button>`
+      :`<div class="vote3-row" onclick="event.stopPropagation()">
+          <button class="v3btn ${v==='super'?'super':''}" onclick="castVote('${ev.id}','super')">🔥 super</button>
+          <button class="v3btn ${v==='could'?'could':''}" onclick="castVote('${ev.id}','could')">✦ could</button>
+          <button class="v3btn ${v==='pass'?'pass':''}" onclick="castVote('${ev.id}','pass')">✕ pass</button>
+        </div>`;
+    html+=`<div class="event-card" style="position:relative;" onclick="openEventDetail('${ev.id}')">
+      <button onclick="event.stopPropagation();quickFloatMenu('${ev.id}')" style="position:absolute;top:12px;right:12px;background:var(--purple-light);border:1px solid var(--purple-mid);color:var(--purple);border-radius:var(--r-full);font-size:12px;font-weight:600;padding:3px 10px;cursor:pointer;z-index:2;font-family:var(--font-main);">🌊 float</button>
+      <div class="event-card-body">
+        <div class="event-top" style="padding-right:70px;">
+          <div class="event-icon-wrap" style="background:${catC.bg};">${ev.emoji}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="event-title">${ev.title}</div>
+            <div class="event-meta">${ev.venue||ev.cat}</div>
+            ${ev.dateLabel?`<div class="event-date-badge">📅 ${ev.dateLabel}</div>`:''}
+            ${selfFloatBadge}
+          </div>
+        </div>
+        ${voteRow}
+      </div>
+    </div>`;
+  });
+  document.getElementById('content').innerHTML=html;
+}
+
+function setType(t){exploreType=t;catFilter='all';dateFilter='all';renderExplore();}
+function setDate(d){dateFilter=d;renderExplore();}
+function setCat(c){catFilter=c;renderExplore();}
+
+function toggleCollapse(id){
+  const el=document.getElementById(id);
+  const arrow=document.getElementById(id+'-arrow');
+  if(!el)return;
+  const hidden=el.style.display==='none';
+  el.style.display=hidden?'block':'none';
+  if(arrow)arrow.textContent=hidden?'▲':'▼';
+}
+
+function expandPendingFloats(){
+  const btn=document.getElementById('pending-more-btn');
+  const list=document.getElementById('pending-more-list');
+  if(btn)btn.style.display='none';
+  if(list)list.style.display='block';
+}
+
+function collapsePendingFloats(){
+  const btn=document.getElementById('pending-more-btn');
+  const list=document.getElementById('pending-more-list');
+  if(btn)btn.style.display='block';
+  if(list)list.style.display='none';
+}
+
+// Quick float menu — pick which group to float to
+function quickFloatMenu(evId){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  const groups=GROUPS[cu];
+  const groupRows=groups.map(g=>{
+    const already=groupFloats[cu][g.id]&&groupFloats[cu][g.id].includes(evId);
+    const clickHandler=already?'':('quickDoFloat(\''+g.id+'\',\''+evId+'\')');
+    return `<div class="group-overlap-row" onclick="${clickHandler}" style="${already?'cursor:default;':''}">
+      <span style="font-size:20px;">${g.emoji}</span>
+      <div style="flex:1;"><div style="font-size:14px;font-weight:500;color:var(--gray-900);">${g.name}</div>
+        <div style="font-size:12px;color:var(--gray-500);">${g.members.length} friends</div>
+      </div>
+      ${already
+        ?`<span style="font-size:11px;color:var(--green);font-weight:600;background:var(--green-light);padding:2px 8px;border-radius:var(--r-full);">floated ✓</span>`
+        :`<span style="font-size:13px;color:var(--purple);">float 🌊</span>`}
+    </div>`;
+  }).join('');
+  showOverlay(`
+    <div class="modal-title">🌊 float to a group</div>
+    <div class="modal-sub">${ev.emoji} ${ev.title}</div>
+    ${groupRows}
+    <div style="text-align:center;margin-top:14px;"><span style="font-size:13px;font-weight:500;color:var(--gray-500);cursor:pointer;padding:8px 20px;border:1px solid var(--gray-200);border-radius:var(--r-full);display:inline-block;" onclick="closeOverlay();renderExplore()">exit</span></div>
+  `);
+}
+
+function quickDoFloat(gid,evId){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  const g=GROUPS[cu].find(x=>x.id===gid);
+  const isActivity=ev.type==='activity';
+  if(isActivity){
+    showOverlay(`
+      <div class="modal-title">🌊 float to ${g.name}</div>
+      <div class="modal-sub">${ev.emoji} ${ev.title}</div>
+      <label>suggest date options — optional</label>
+      <input class="input-field" id="qfd1" placeholder="Option 1: e.g. Jun 14 · 7pm" />
+      <input class="input-field" id="qfd2" placeholder="Option 2: e.g. Jun 21 · 7pm" />
+      <div class="modal-btns">
+        <button class="mbtn mbtn-cancel" onclick="quickFloatMenu('${evId}')">back</button>
+        <button class="mbtn mbtn-primary" onclick="doFloat('${gid}','${evId}')">float it 🌊</button>
+      </div>
+    `);
+  } else {
+    // Events: float immediately and stay on menu
+    doFloat(gid,evId);
+  }
+}
+
+// Date-first vote modal for activities with proposed dates
+function openDateVoteModal(evId){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  const myV=votes[cu][evId];
+  const dateOpts=ev.dateOptions||[];
+  const dateRows=dateOpts.map((d,i)=>{
+    const sel=dateVotes[cu]&&dateVotes[cu][evId]&&dateVotes[cu][evId][i];
+    return `<div style="border:1px solid var(--gray-200);border-radius:var(--r-md);padding:10px 12px;margin-bottom:8px;">
+      <div style="font-size:13px;font-weight:500;color:var(--gray-900);margin-bottom:8px;">📅 ${d}</div>
+      <div class="vote3-row">
+        <button class="v3btn ${sel==='super'?'super':''}" onclick="castDateVote('${evId}',${i},'super',this)">🔥 super</button>
+        <button class="v3btn ${sel==='could'?'could':''}" onclick="castDateVote('${evId}',${i},'could',this)">✦ could</button>
+        <button class="v3btn ${sel==='pass'?'pass':''}" onclick="castDateVote('${evId}',${i},'pass',this)">✕ pass</button>
+      </div>
+    </div>`;
+  }).join('');
+  showOverlay(`
+    <div class="modal-title">${ev.emoji} ${ev.title}</div>
+    <div class="modal-sub">respond to each proposed date</div>
+    ${dateRows}
+    <div style="font-size:12px;color:var(--gray-500);margin-bottom:12px;">overall interest:</div>
+    <div class="vote3-row" style="margin-bottom:4px;">
+      <button class="v3btn ${myV==='super'?'super':''}" onclick="castVote('${evId}','super');openDateVoteModal('${evId}')">🔥 super</button>
+      <button class="v3btn ${myV==='could'?'could':''}" onclick="castVote('${evId}','could');openDateVoteModal('${evId}')">✦ could</button>
+      <button class="v3btn ${myV==='pass'?'pass':''}" onclick="castVote('${evId}','pass');openDateVoteModal('${evId}')">✕ pass</button>
+    </div>
+    <div class="modal-btns" style="margin-top:14px;">
+      <button class="mbtn mbtn-cancel" onclick="closeOverlay()">cancel</button>
+      <button class="mbtn mbtn-primary" onclick="closeOverlay();renderExplore()">done</button>
+    </div>
+  `);
+}
+
+function castDateVote(evId,dateIdx,v,btn){
+  if(!dateVotes[cu])dateVotes[cu]={};
+  if(!dateVotes[cu][evId])dateVotes[cu][evId]={};
+  dateVotes[cu][evId][dateIdx]=dateVotes[cu][evId][dateIdx]===v?null:v;
+  // Re-render just the button group
+  const row=btn.closest('.vote3-row');
+  row.querySelectorAll('.v3btn').forEach(b=>b.className='v3btn');
+  if(dateVotes[cu][evId][dateIdx]){
+    const cls=dateVotes[cu][evId][dateIdx];
+    btn.className=`v3btn ${cls}`;
+  }
+}
+
+// Event detail: shows overlap per group + float button
+function openEventDetail(evId){
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  if(!ev)return;
+  const myName=USERS[cu].name;
+  const groups=GROUPS[cu];
+  initUser(cu);
+  const myV=votes[cu][evId];
+
+  let groupRows='';
+  groups.forEach(g=>{
+    const gs=groupSeed[cu][g.id];
+    let sup=myV==='super'?1:0,cou=myV==='could'?1:0;
+    g.members.forEach(m=>{const v=gs[evId]?gs[evId][m]:'pending';if(v==='super')sup++;else if(v==='could')cou++;});
+    const total=g.members.length+1;
+    const isFloated=groupFloats[cu][g.id]&&groupFloats[cu][g.id].includes(evId);
+    groupRows+=`<div class="group-overlap-row" onclick="floatOrViewGroup('${g.id}','${evId}')">
+      <span style="font-size:20px;">${g.emoji}</span>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:500;color:var(--gray-900);">${g.name}</div>
+        <div style="font-size:12px;color:var(--gray-500);">🔥${sup} interested · ${g.members.length+1} people</div>
+      </div>
+      ${isFloated?`<span style="font-size:11px;color:var(--purple);font-weight:600;background:var(--purple-light);padding:2px 8px;border-radius:var(--r-full);">floated</span>`:`<span style="font-size:12px;color:var(--purple);">float 🌊</span>`}
+    </div>`;
+  });
+
+  const catC=CAT_COLORS[ev.cat]||{bg:'#F0EEE9'};
+
+  // Show existing vote label
+  const voteLabel=myV==='super'?'🔥 super interested':myV==='could'?'✦ could be down':myV==='pass'?'✕ pass':null;
+  const myVoteDisplay=voteLabel
+    ?`<div style="margin-bottom:12px;font-size:13px;color:var(--gray-500);">your response: <span style="font-weight:600;color:var(--gray-900);">${voteLabel}</span> · <span style="color:var(--purple);cursor:pointer;" onclick="openVoteModal('${evId}','${ev.title.replace(/'/g,"\\'")}')">change</span></div>`
+    :'';
+
+  // Date options for activities
+  let dateOptsHtml='';
+  if(ev.type==='activity'&&ev.dateOptions&&ev.dateOptions.length){
+    dateOptsHtml=`<div style="margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">proposed dates</div>
+      ${ev.dateOptions.map(d=>`<div style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--gray-700);background:var(--gray-50);border:1px solid var(--gray-200);padding:4px 12px;border-radius:var(--r-full);margin-right:6px;margin-bottom:6px;">📅 ${d}</div>`).join('')}
+    </div>`;
+  }
+
+  showOverlay(`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="width:52px;height:52px;border-radius:14px;background:${catC.bg};display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">${ev.emoji}</div>
+      <div>
+        <div style="font-size:17px;font-weight:600;color:var(--gray-900);">${ev.title}</div>
+        ${ev.dateLabel?`<div class="event-date-badge" style="margin-top:4px;">📅 ${ev.dateLabel}</div>`:''}
+        ${ev.floatedBy&&ev.floatedBy!==myName?`<div class="floated-by">🌊 floated by ${ev.floatedBy}</div>`:''}
+      </div>
+    </div>
+    ${dateOptsHtml}
+    ${myVoteDisplay}
+    <div style="margin-bottom:4px;font-size:12px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;">${myV?'update your interest':'your interest'}</div>
+    <div class="vote3-row" style="margin-bottom:16px;">
+      <button class="v3btn ${myV==='super'?'super':''}" onclick="castVote('${evId}','super');openEventDetail('${evId}')">🔥 super</button>
+      <button class="v3btn ${myV==='could'?'could':''}" onclick="castVote('${evId}','could');openEventDetail('${evId}')">✦ could</button>
+      <button class="v3btn ${myV==='pass'?'pass':''}" onclick="castVote('${evId}','pass');openEventDetail('${evId}')">✕ pass</button>
+    </div>
+    <div style="font-size:12px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">overlap by group</div>
+    ${groupRows}
+    <div style="text-align:center;margin-top:12px;"><span style="font-size:12px;color:var(--gray-500);cursor:pointer;" onclick="closeOverlay()">close</span></div>
+  `);
+}
+
+function floatOrViewGroup(gid,evId){
+  if(groupFloats[cu][gid]&&groupFloats[cu][gid].includes(evId)){
+    closeOverlay();openGroup=gid;currentTab='friends';
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab==='friends'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.id==='nav-friends'));
+    renderGroupDetail();
+  } else {
+    const g=GROUPS[cu].find(x=>x.id===gid);
+    const ev=getEvents(cu).find(e=>e.id===evId);
+    const isActivity=ev.type==='activity';
+    const dateSection=isActivity?`
+      <label>suggest date options — optional</label>
+      <input class="input-field" id="fd1" placeholder="Option 1: e.g. Jun 14 · 7pm" />
+      <input class="input-field" id="fd2" placeholder="Option 2: e.g. Jun 21 · 7pm" />`
+      :`<div style="font-size:13px;color:var(--gray-500);margin-bottom:14px;">📅 ${ev.dateLabel} · ${ev.venue||''}</div>`;
+    showOverlay(`
+      <div class="modal-title">🌊 float to ${g.name}</div>
+      <div class="modal-sub">${ev.emoji} ${ev.title}</div>
+      ${dateSection}
+      <div class="modal-btns">
+        <button class="mbtn mbtn-cancel" onclick="openEventDetail('${evId}')">back</button>
+        <button class="mbtn mbtn-primary" onclick="doFloat('${gid}','${evId}')">float it 🌊</button>
+      </div>
+    `);
+  }
+}
+
+function doFloat(gid,evId){
+  if(!groupFloats[cu][gid])groupFloats[cu][gid]=[];
+  if(!groupFloats[cu][gid].includes(evId))groupFloats[cu][gid].push(evId);
+  const g=GROUPS[cu].find(x=>x.id===gid);
+  if(groupSeed[cu][gid]&&!groupSeed[cu][gid][evId]){
+    groupSeed[cu][gid][evId]={};
+    g.members.forEach(m=>{const r=Math.random();groupSeed[cu][gid][evId][m]=r<0.38?'super':r<0.55?'could':r<0.7?'pass':'pending';});
+  }
+  // Stay on the group picker — re-render it with updated state
+  quickFloatMenu(evId);
+}
+
+function openAddEvent(){
+  const isEv=exploreType==='event';
+  const groups=GROUPS[cu];
+  const groupChips=groups.map(g=>
+    `<div class="contact-chip" id="fgrp-${g.id}" onclick="toggleFloatGroup('${g.id}')">${g.emoji} ${g.name}</div>`
+  ).join('');
+  showOverlay(`
+    <div class="modal-title">＋ add ${isEv?'an event':'an activity'}</div>
+    <input class="input-field" id="ev-title" placeholder="${isEv?'event name':'activity name'}" />
+    ${isEv
+      ?`<input class="input-field" id="ev-date" placeholder="date & time (e.g. Jun 28 · 7pm)" /><input class="input-field" id="ev-venue" placeholder="venue / location" />`
+      :`<label>suggest up to 3 date/time options — optional</label>
+        <input class="input-field" id="ev-d1" placeholder="Option 1 (e.g. Jun 14 · 7pm)" />
+        <input class="input-field" id="ev-d2" placeholder="Option 2 — optional" />
+        <input class="input-field" id="ev-d3" placeholder="Option 3 — optional" />`
+    }
+    <label>category</label>
+    <select class="input-field" id="ev-cat">${ALL_CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+    <label>float to groups — optional</label>
+    <div class="chip-group" id="float-group-chips">${groupChips}</div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeOverlay()">cancel</button>
+      <button class="mbtn mbtn-primary" onclick="saveEvent()">float it 🌊</button>
+    </div>
+  `);
+  window._floatGroups=[];
+}
+
+function toggleFloatGroup(gid){
+  const el=document.getElementById('fgrp-'+gid);
+  const idx=window._floatGroups.indexOf(gid);
+  if(idx===-1){window._floatGroups.push(gid);el&&el.classList.add('sel');}
+  else{window._floatGroups.splice(idx,1);el&&el.classList.remove('sel');}
+}
+
+function saveEvent(){
+  const title=document.getElementById('ev-title').value.trim();if(!title){alert('add a title!');return;}
+  const cat=document.getElementById('ev-cat').value;const isEv=exploreType==='event';
+  let dateOptions=[];
+  if(!isEv){
+    ['ev-d1','ev-d2','ev-d3'].forEach(id=>{const el=document.getElementById(id);if(el&&el.value.trim())dateOptions.push(el.value.trim());});
+  }
+  const newEv={id:'custom'+Date.now(),type:exploreType,emoji:'⭐',title,cat,floatedBy:null,
+    ...(isEv?{date:'2025-06-30',dateLabel:(document.getElementById('ev-date').value||'TBD'),venue:(document.getElementById('ev-venue').value||'')}:{}),
+    ...(dateOptions.length?{dateOptions}:{})
+  };
+  if(cu==='james')SEA_EVENTS.push(newEv);else if(cu==='default')NYC_EVENTS.push(newEv);else SF_EVENTS.push(newEv);
+  votes[cu][newEv.id]=null;
+  GROUPS[cu].forEach(g=>{if(!groupSeed[cu]||!groupSeed[cu][g.id])return;groupSeed[cu][g.id][newEv.id]={};g.members.forEach(m=>{const r=Math.random();groupSeed[cu][g.id][newEv.id][m]=r<0.38?'super':r<0.55?'could':r<0.7?'pass':'pending';});});
+  (window._floatGroups||[]).forEach(gid=>{
+    if(!groupFloats[cu][gid])groupFloats[cu][gid]=[];
+    if(!groupFloats[cu][gid].includes(newEv.id))groupFloats[cu][gid].push(newEv.id);
+  });
+  closeOverlay();renderExplore();
+}
+
+// ── NOTIFICATIONS ────────────────────────────────────────────
+function openNotifications(){
+  document.getElementById('notif-dot').style.display='none';
+  const notifs=getNotifications(cu);
+  let rows=notifs.map(n=>{
+    const isNudgeReceived=n.action==='goVote';
+    const isDateNudge=n.icon==='📅';
+    const bgColor=n.unread?(isDateNudge?'var(--teal-light)':isNudgeReceived?'var(--amber-light)':'var(--purple-light)'):'var(--gray-100)';
+    const alreadyNudged=n.nudgeKey&&nudgedSent[cu]&&nudgedSent[cu][n.nudgeKey];
+    let actionHtml='';
+    if(n.action==='goVote'){
+      const isDate=n.icon==='📅';
+      actionHtml=`<span class="notif-action" style="background:${isDate?'var(--teal)':'var(--amber)'};color:white;" onclick="goVoteFromNotif('${n.nudgedGroup}','${n.nudgedEvId}')">${isDate?'📅 mark availability':'👉 respond now'}</span>`;
+    } else if(n.action==='nudge'){
+      actionHtml=alreadyNudged
+        ?`<span class="notif-action" style="background:var(--green);color:white;cursor:default;">nudge sent! 👋</span>`
+        :`<span class="notif-action" onclick="doNudge(event,'${n.nudgeKey}')">👋 send nudge</span>`;
+    }
+    const nudgeReceivedBadge=isDateNudge?`<div style="font-size:11px;color:var(--teal);font-weight:600;margin-top:2px;">new date proposed 📅</div>`:isNudgeReceived?`<div style="font-size:11px;color:var(--amber);font-weight:600;margin-top:2px;">you were nudged 👀</div>`:'';
+    return `<div class="notif-item ${n.unread?'notif-unread':''}" style="${isNudgeReceived?'cursor:pointer;':''}" ${isNudgeReceived?`onclick="goVoteFromNotif('${n.nudgedGroup}','${n.nudgedEvId}')"`:''}">
+      <div class="notif-icon-wrap" style="background:${bgColor};">${n.icon}</div>
+      <div style="flex:1;">
+        <div class="notif-text">${n.text}</div>
+        ${nudgeReceivedBadge}
+        <div class="notif-time">${n.time}</div>
+        ${actionHtml}
+      </div>
+    </div>`;
+  }).join('');
+  showOverlay(`
+    <div class="modal-title" style="margin-bottom:4px;">🔔 notifications</div>
+    <div style="font-size:12px;color:var(--gray-500);margin-bottom:16px;">3 new</div>
+    <div class="notif-panel">${rows}</div>
+    <div style="text-align:center;margin-top:14px;"><span style="font-size:12px;color:var(--gray-500);cursor:pointer;" onclick="closeOverlay()">close</span></div>
+  `);
+}
+
+function goVoteFromNotif(groupId,evId){
+  closeOverlay();
+  currentTab='friends';
+  openGroup=groupId;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab==='friends'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.id==='nav-friends'));
+  renderGroupDetail();
+  const ev=getEvents(cu).find(e=>e.id===evId);
+  if(!ev)return;
+  // If it's a date nudge (activity with dates), open date availability modal
+  // Otherwise open interest vote modal
+  const hasDates=ev.type==='activity'&&ev.dateOptions&&ev.dateOptions.length;
+  setTimeout(()=>{
+    if(hasDates) openDateAvailModal(evId);
+    else openVoteModal(evId,ev.title);
+  },120);
+}
+
+function doNudge(e,nudgeKey){
+  e.stopPropagation();
+  if(!nudgedSent[cu])nudgedSent[cu]={};
+  nudgedSent[cu][nudgeKey]=true;
+  const btn=e.target;
+  btn.textContent='nudge sent! 👋';
+  btn.style.background='var(--green)';btn.style.color='white';btn.style.cursor='default';
+  btn.onclick=null;
+}
+
+// ── PROFILE ──────────────────────────────────────────────────
+function renderProfile(){
+  const u=USERS[cu];const groups=GROUPS[cu];const allFriends=new Set(groups.flatMap(g=>g.members));
+  let html=`<div class="profile-hero">
+    <div class="av av-lg ${colorClass(u.name)}">${initials(u.name)}</div>
+    <div class="profile-name">${u.name}</div>
+    <div class="profile-loc">📍 ${u.city}</div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-num">${groups.length}</div><div class="stat-label">friend groups</div></div>
+    <div class="stat-card"><div class="stat-num">${allFriends.size}</div><div class="stat-label">friends</div></div>
+  </div>
+  <div class="sec-label">quick actions</div>
+  <div class="add-row" onclick="switchTab('friends');setTimeout(openAddGroup,50)"><span style="font-size:20px;">＋</span> new group</div>
+  <div class="add-row" onclick="openAddFriend()"><span style="font-size:20px;">👋</span> add a friend</div>
+  <div class="sec-label" style="margin-top:6px;">your groups</div>`;
+  groups.forEach(g=>{
+    html+=`<div class="card" onclick="switchTab('friends');setTimeout(()=>openGroupView('${g.id}'),50)">
+      <div class="card-row">
+        <div class="card-icon">${g.emoji}</div>
+        <div class="card-body"><div class="card-title">${g.name}</div><div class="card-sub">${g.members.join(', ')}</div></div>
+        <div class="chevron">›</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('content').innerHTML=html;
+}
+function openAddFriend(){
+  showOverlay(`
+    <div class="modal-title">add a friend</div>
+    <input class="input-field" id="friend-name" placeholder="name" />
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeOverlay()">cancel</button>
+      <button class="mbtn mbtn-primary" onclick="closeOverlay();renderProfile()">add</button>
+    </div>
+  `);
+}
+
+// Init
+initUser(cu);
+render();
+</script>
+</body>
+</html>
