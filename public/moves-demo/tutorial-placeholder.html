@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>moves — interactive tutorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple:#7C6FF7; --purple-light:#EEEDff; --purple-mid:#C4C0FC;
+  --green:#1DB97A; --green-light:#E0F7EE;
+  --red:#F04E4E; --red-light:#FDEAEA;
+  --amber:#F5A623; --amber-light:#FEF3DC;
+  --gray-50:#F8F7F5; --gray-100:#F0EEE9; --gray-200:#E2DED6;
+  --gray-300:#C8C3B8; --gray-500:#8A857A; --gray-700:#4A4540; --gray-900:#1C1A17;
+  --white:#FFFFFF;
+  --font-main:'DM Sans',sans-serif; --font-display:'DM Serif Display',serif;
+  --r-sm:8px; --r-md:12px; --r-lg:18px; --r-xl:24px; --r-full:9999px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06); --shadow-md:0 4px 12px rgba(0,0,0,.08); --shadow-lg:0 16px 40px rgba(0,0,0,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--font-main);background:#E8E4DD;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 48px;
+  background-image:radial-gradient(circle at 20% 20%,rgba(124,111,247,.08) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(29,185,122,.06) 0%,transparent 50%);}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{width:390px;max-width:100%;margin-bottom:16px;}
+.progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.progress-logo{font-family:var(--font-display);font-size:22px;color:var(--gray-900);}
+.progress-logo em{color:var(--purple);font-style:italic;}
+.progress-meta{display:flex;align-items:center;gap:10px;}
+.progress-label{font-size:12px;color:var(--gray-500);}
+.reset-btn{font-size:12px;font-weight:500;color:var(--gray-500);background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--r-full);padding:4px 12px;cursor:pointer;font-family:var(--font-main);transition:all .12s;}
+.reset-btn:hover{color:var(--red);border-color:var(--red-light);}
+.progress-track{height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),#A89BF9);border-radius:3px;transition:width .4s ease;}
+.step-dots{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--gray-200);transition:all .3s;}
+.step-dot.done{background:var(--purple);}
+.step-dot.active{background:var(--purple);box-shadow:0 0 0 3px var(--purple-light);}
+
+/* ── PHONE FRAME ── */
+.phone-frame{width:390px;max-width:100%;height:780px;background:var(--white);border-radius:44px;
+  box-shadow:var(--shadow-lg),0 0 0 8px #D4D0C8,0 0 0 10px #C8C4BC;
+  overflow:hidden;position:relative;display:flex;flex-direction:column;}
+.status-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 4px;font-size:12px;font-weight:500;color:var(--gray-700);flex-shrink:0;}
+.dynamic-island{width:120px;height:34px;background:var(--gray-900);border-radius:var(--r-full);position:absolute;top:10px;left:50%;transform:translateX(-50%);}
+.app-header{padding:10px 20px 0;border-bottom:1px solid var(--gray-100);flex-shrink:0;}
+.app-logo{font-family:var(--font-display);font-size:26px;color:var(--gray-900);letter-spacing:-.5px;margin-bottom:10px;}
+.app-logo em{color:var(--purple);font-style:italic;}
+.tab-row{display:flex;gap:4px;}
+.tab{flex:1;padding:8px 4px;text-align:center;font-size:13px;color:var(--gray-500);border-bottom:2px solid transparent;transition:all .15s;}
+.tab.active{color:var(--purple);border-bottom-color:var(--purple);font-weight:500;}
+.content-area{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 16px 12px;-webkit-overflow-scrolling:touch;}
+.content-area::-webkit-scrollbar{display:none;}
+.bottom-nav{display:flex;border-top:1px solid var(--gray-100);padding:10px 0 20px;background:var(--white);flex-shrink:0;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--gray-300);font-size:10px;font-weight:500;}
+.nav-item.active{color:var(--purple);}
+.nav-icon{font-size:22px;line-height:1;}
+
+/* ── LOCK OVERLAY ── */
+.lock-overlay{position:absolute;inset:0;z-index:40;border-radius:44px;background:transparent;}
+.lock-overlay.dim{background:rgba(28,26,23,.35);}
+
+/* ── SPOTLIGHT (cutout for unlocked element) ── */
+.spotlight{position:absolute;border-radius:var(--r-lg);box-shadow:0 0 0 9999px rgba(28,26,23,.5);z-index:41;pointer-events:none;transition:all .3s;}
+
+/* ── BOTTOM SHEET TOOLTIP ── */
+.bs-overlay{position:absolute;inset:0;z-index:60;border-radius:44px;display:flex;align-items:flex-end;}
+.bs-sheet{background:var(--white);border-radius:28px 28px 0 0;width:100%;padding:0 20px 28px;animation:slideUp .28s ease;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.bs-handle{width:40px;height:4px;background:var(--gray-200);border-radius:2px;margin:14px auto 18px;}
+.bs-emoji{font-size:32px;margin-bottom:10px;}
+.bs-title{font-size:18px;font-weight:600;color:var(--gray-900);margin-bottom:8px;line-height:1.3;}
+.bs-body{font-size:14px;color:var(--gray-500);line-height:1.6;margin-bottom:20px;}
+.bs-body strong{color:var(--gray-900);}
+.bs-cta{width:100%;padding:14px;background:var(--purple);color:white;border:none;border-radius:var(--r-md);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font-main);transition:all .12s;}
+.bs-cta:hover{background:#6A5FF5;}
+.bs-skip{display:block;text-align:center;margin-top:12px;font-size:13px;color:var(--gray-400);cursor:pointer;}
+
+/* ── SPEECH BUBBLE ── */
+.bubble-wrap{position:absolute;z-index:60;pointer-events:none;}
+.bubble{background:var(--purple);color:white;border-radius:14px;padding:10px 14px;font-size:13px;line-height:1.5;font-weight:400;max-width:220px;box-shadow:var(--shadow-md);pointer-events:auto;}
+.bubble strong{font-weight:600;}
+.bubble-arrow{width:0;height:0;}
+.bubble-arrow.down{border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid var(--purple);margin:0 auto;}
+.bubble-arrow.up{border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:10px solid var(--purple);margin:0 auto;}
+.bubble-arrow.left{border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:10px solid var(--purple);margin:auto 0;}
+.bubble-tap{margin-top:10px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:var(--r-full);padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;display:inline-block;pointer-events:auto;}
+
+/* ── UI ELEMENTS (simplified app) ── */
+.card{background:var(--white);border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all .12s;box-shadow:var(--shadow-sm);}
+.card:hover{background:var(--gray-50);}
+.card-row{display:flex;align-items:center;gap:12px;}
+.card-icon{width:44px;height:44px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--gray-50);}
+.card-title{font-size:15px;font-weight:500;color:var(--gray-900);}
+.card-sub{font-size:12px;color:var(--gray-500);margin-top:2px;}
+.sec-label{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;margin-top:4px;}
+.add-row{display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px dashed var(--gray-200);border-radius:var(--r-lg);cursor:pointer;font-size:14px;color:var(--purple);font-weight:500;margin-bottom:10px;transition:all .12s;}
+.add-row:hover{background:var(--purple-light);border-color:var(--purple-mid);}
+.ev-card{border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:10px;background:var(--white);box-shadow:var(--shadow-sm);position:relative;}
+.ev-icon{width:46px;height:46px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.ev-title{font-size:15px;font-weight:500;color:var(--gray-900);}
+.ev-meta{font-size:12px;color:var(--gray-500);margin-top:2px;}
+.ev-date{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--gray-700);background:var(--gray-50);border:1px solid var(--gray-200);padding:3px 10px;border-radius:var(--r-full);margin-top:6px;}
+.float-btn{position:absolute;top:12px;right:12px;background:var(--purple-light);border:1px solid var(--purple-mid);color:var(--purple);border-radius:var(--r-full);font-size:12px;font-weight:600;padding:3px 10px;cursor:pointer;font-family:var(--font-main);}
+.v3row{display:flex;gap:6px;margin-top:10px;}
+.v3btn{flex:1;padding:8px 4px;border-radius:var(--r-md);font-size:12px;font-weight:500;border:1px solid var(--gray-200);background:var(--gray-50);color:var(--gray-500);cursor:pointer;font-family:var(--font-main);text-align:center;}
+.v3btn.super{background:#E8F5E9;border-color:#9FD4AC;color:#1B6B2E;}
+.v3btn.could{background:var(--amber-light);border-color:#F0C97A;color:#8C5100;}
+.v3btn.pass{background:var(--red-light);border-color:#F7C1C1;color:#A32D2D;}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:500;}
+.pill-super{background:#E8F5E9;color:#1B6B2E;}
+.pill-could{background:var(--amber-light);color:#8C5100;}
+.pill-pass{background:var(--red-light);color:#A32D2D;}
+.pill-pending{background:var(--gray-100);color:var(--gray-500);}
+.pill-tap{background:var(--amber-light);color:#8C5100;cursor:pointer;border:1px dashed var(--amber);}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;flex-shrink:0;border:2px solid var(--white);}
+.av-sm{width:26px;height:26px;font-size:9px;}
+.av-0{background:#EEEDff;color:#534AB7;} .av-1{background:#E1F5EE;color:#0F6E56;}
+.av-2{background:#FAECE7;color:#993C1D;} .av-3{background:#FBEAF0;color:#993556;}
+.av-4{background:#E6F1FB;color:#185FA5;} .av-5{background:#FAEEDA;color:#854F0B;}
+.member-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--gray-50);}
+.member-name{font-size:13px;color:var(--gray-700);flex:1;}
+.progress-bar{height:4px;background:var(--gray-100);border-radius:2px;margin-bottom:10px;overflow:hidden;}
+.progress-fill-bar{height:100%;background:linear-gradient(90deg,var(--purple),#A89BF9);border-radius:2px;}
+.type-toggle{display:flex;background:var(--gray-100);border-radius:var(--r-md);padding:3px;gap:2px;margin-bottom:14px;}
+.type-btn{flex:1;padding:7px 8px;text-align:center;font-size:13px;color:var(--gray-500);border-radius:9px;cursor:pointer;transition:all .15s;}
+.type-btn.active{background:var(--white);color:var(--gray-900);font-weight:500;box-shadow:var(--shadow-sm);}
+.floated-banner{background:linear-gradient(135deg,var(--purple-light),#F5F3FF);border:1px solid var(--purple-mid);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:14px;}
+.input-field{width:100%;padding:10px 14px;border:1px solid var(--gray-200);border-radius:var(--r-md);font-size:14px;color:var(--gray-900);background:var(--white);margin-bottom:10px;font-family:var(--font-main);outline:none;transition:border-color .15s;}
+.input-field:focus{border-color:var(--purple);}
+.nudge-btn{font-size:11px;font-weight:600;color:var(--purple);background:var(--purple-light);border:1px solid var(--purple-mid);border-radius:var(--r-full);padding:3px 9px;cursor:pointer;font-family:var(--font-main);}
+.nudge-sent{font-size:11px;font-weight:600;color:#0F6E56;background:var(--green-light);padding:3px 9px;border-radius:var(--r-full);}
+
+/* ── CONGRATS SCREEN ── */
+.congrats{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:32px 24px;}
+.congrats-emoji{font-size:64px;margin-bottom:16px;animation:pop .4s ease;}
+@keyframes pop{from{transform:scale(0);}to{transform:scale(1);}}
+.congrats-title{font-family:var(--font-display);font-size:28px;color:var(--gray-900);letter-spacing:-.5px;margin-bottom:12px;}
+.congrats-title em{color:var(--purple);font-style:italic;}
+.congrats-body{font-size:14px;color:var(--gray-500);line-height:1.7;margin-bottom:28px;}
+.congrats-cta{display:block;width:100%;padding:14px;background:var(--purple);color:white;border:none;border-radius:var(--r-md);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font-main);text-decoration:none;margin-bottom:10px;}
+.congrats-secondary{font-size:13px;color:var(--gray-400);cursor:pointer;}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-header">
+    <div class="progress-logo">mo<em>v</em>es <span style="font-family:var(--font-main);font-size:13px;font-weight:400;color:var(--gray-500);">tutorial</span></div>
+    <div class="progress-meta">
+      <span class="progress-label" id="step-label">step 1 of 8</span>
+      <button class="reset-btn" onclick="prevStep()" id="back-btn" style="display:none;">‹ back</button>
+      <button class="reset-btn" onclick="resetTutorial()">↺ reset</button>
+    </div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:12%;"></div></div>
+  <div class="step-dots" id="step-dots"></div>
+</div>
+
+<!-- PHONE -->
+<div class="phone-frame" id="phone">
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="dynamic-island"></div>
+    <span style="display:flex;gap:6px;align-items:center;">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y=".5" width="3" height="11.5" rx="1"/></svg>
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x=".5" y=".5" width="14" height="11" rx="2.5" stroke="currentColor" stroke-opacity=".3"/><rect x="2" y="2" width="10" height="8" rx="1.5" fill="currentColor"/></svg>
+    </span>
+  </div>
+
+  <div class="app-header" id="app-header" style="display:none;">
+    <div class="app-logo">mo<em>v</em>es</div>
+    <div class="tab-row" id="tab-row">
+      <div class="tab active" id="tab-friends">👥 friends</div>
+      <div class="tab" id="tab-explore">🗺 explore</div>
+      <div class="tab" id="tab-profile">🙂 profile</div>
+    </div>
+  </div>
+
+  <div class="content-area" id="content"></div>
+
+  <div class="bottom-nav" id="bottom-nav" style="display:none;">
+    <div class="nav-item active" id="nav-friends"><div class="nav-icon">👥</div><span>friends</span></div>
+    <div class="nav-item" id="nav-explore"><div class="nav-icon">🗺</div><span>explore</span></div>
+    <div class="nav-item" id="nav-profile"><div class="nav-icon">🙂</div><span>profile</span></div>
+  </div>
+
+  <!-- overlays rendered here -->
+  <div id="tut-overlay"></div>
+  <div id="spotlight" class="spotlight" style="display:none;"></div>
+  <div id="bubble-wrap" class="bubble-wrap" style="display:none;"></div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+let userName='', groupName='', groupFriends=[], oneoneName='', oneoneGroup='';
+let floatedEvId=null, floatedActivityId=null, floatedGroupId='group1';
+let currentStep=0;
+let groupMemberVotes={}; // simulate friend votes
+let myVotes={};
+let myDateVotes={};
+let nudgedMembers=new Set();
+let exploreTab='event';
+
+const STEPS=[
+  'welcome',        // 0
+  'name',           // 1
+  'group-setup',    // 2
+  'oneonone',       // 3
+  'explore-intro',  // 4
+  'float-event',    // 5
+  'group-view',     // 6
+  'nudge-step',     // 7
+  'add-member',     // 8
+  'activities',     // 9
+  'float-activity', // 10
+  'friend-floated', // 11
+  'respond',        // 12
+  'see-group',      // 13
+  'congrats'        // 14
+];
+const TOTAL_STEPS=STEPS.length;
+let addedMember='';
+
+// Sample content
+const SAMPLE_EVENTS=[
+  {id:'e1',type:'event',emoji:'🎵',title:'Outside Lands Festival',meta:'Aug 8–10 · Golden Gate Park',cat:'Arts & culture'},
+  {id:'e2',type:'event',emoji:'⚾',title:'Giants vs Dodgers',meta:'Jun 14 · 7:15 PM · Oracle Park',cat:'Outdoor'},
+  {id:'e3',type:'event',emoji:'🌇',title:'Rooftop Happy Hour',meta:'Jun 7 · 5:00 PM · The Battery',cat:'Bars'},
+];
+const SAMPLE_ACTIVITIES=[
+  {id:'a1',type:'activity',emoji:'🥐',title:'Brunch somewhere',meta:'Brunch & restaurants'},
+  {id:'a2',type:'activity',emoji:'🎾',title:'Tennis in the park',meta:'Outdoor / active'},
+  {id:'a3',type:'activity',emoji:'🎲',title:'Game night',meta:'Cozy / lowkey'},
+  {id:'a4',type:'activity',emoji:'🥾',title:'Day hike',meta:'Outdoor / active',dateOptions:['Jun 14 · 10am','Jun 21 · 10am']},
+];
+
+function colorClass(name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))&0xffffffff;return'av-'+(Math.abs(h)%8);}
+function initials(n){return n.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);}
+function av(name,size='sm'){return`<div class="av av-${size} ${colorClass(name)}">${initials(name)}</div>`;}
+
+// ── PROGRESS ───────────────────────────────────────────────
+function updateProgress(){
+  const pct=Math.round((currentStep/(TOTAL_STEPS-1))*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('step-label').textContent=`step ${currentStep+1} of ${TOTAL_STEPS}`;
+  const dots=document.getElementById('step-dots');
+  dots.innerHTML=STEPS.map((_,i)=>`<div class="step-dot ${i<currentStep?'done':i===currentStep?'active':''}"></div>`).join('');
+  const backBtn=document.getElementById('back-btn');
+  if(backBtn) backBtn.style.display=currentStep>0?'inline-block':'none';
+}
+
+function resetTutorial(){
+  if(!confirm('reset the tutorial from the beginning?')) return;
+  userName=''; groupName=''; groupFriends=[]; oneoneName=''; oneoneGroup='';
+  floatedEvId=null; floatedActivityId=null; currentStep=0; groupMemberVotes={}; myVotes={}; nudgedMembers=new Set();
+  document.getElementById('app-header').style.display='none';
+  document.getElementById('bottom-nav').style.display='none';
+  clearOverlays();
+  goToStep(0);
+}
+
+// ── OVERLAY HELPERS ────────────────────────────────────────
+function clearOverlays(){
+  document.getElementById('tut-overlay').innerHTML='';
+  document.getElementById('tut-overlay').style.pointerEvents='none';
+  document.getElementById('spotlight').style.display='none';
+  document.getElementById('bubble-wrap').style.display='none';
+  document.getElementById('bubble-wrap').innerHTML='';
+  // Remove any floating continue buttons
+  if(window._contBtn){try{window._contBtn.remove();}catch(e){}window._contBtn=null;}
+  ['final-cont-btn','group-cont-btn','member-cont-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+  document.querySelectorAll('#phone>div[style*="bottom:28px"]').forEach(el=>el.remove());
+}
+
+function showBottomSheet({emoji,title,body,cta,ctaFn,skip,skipFn,dim=true}){
+  clearOverlays();
+  const ov=document.getElementById('tut-overlay');
+  // When dim=false (input steps), only the sheet itself captures events, not the backdrop
+  ov.style.pointerEvents=dim?'auto':'none';
+  const skipHtml=skip?`<span class="bs-skip" onclick="${skipFn||'nextStep()'}">${skip}</span>`:'';
+  ov.innerHTML=`<div class="bs-overlay" style="${dim?'background:rgba(28,26,23,.45);border-radius:44px;':''}pointer-events:${dim?'auto':'none'};">
+    <div class="bs-sheet" style="pointer-events:auto;">
+      <div class="bs-handle"></div>
+      ${emoji?`<div class="bs-emoji">${emoji}</div>`:''}
+      <div class="bs-title">${title}</div>
+      <div class="bs-body">${body}</div>
+      <button class="bs-cta" onclick="${ctaFn||'nextStep()'}">${cta}</button>
+      ${skipHtml}
+    </div>
+  </div>`;
+}
+
+function showBubble({text,x,y,arrow,tapLabel,tapFn,timeout}){
+  clearOverlays();
+  const bw=document.getElementById('bubble-wrap');
+  bw.style.display='block';
+  bw.style.left=x+'px'; bw.style.top=y+'px';
+  bw.innerHTML=`<div style="display:flex;flex-direction:column;align-items:${arrow==='left'?'flex-start':'center'};">
+    ${arrow==='up'?`<div class="bubble-arrow up"></div>`:''}
+    <div class="bubble">${text}${tapLabel?`<br><span class="bubble-tap" onclick="${tapFn||'nextStep()'}">${tapLabel} →</span>`:''}</div>
+    ${(arrow==='down')?`<div class="bubble-arrow down"></div>`:''}
+    ${arrow==='left'?`<div class="bubble-arrow left"></div>`:''}
+  </div>`;
+  if(timeout) setTimeout(()=>{bw.style.display='none';if(tapFn===undefined)nextStep();},timeout);
+}
+
+function spotlightEl(selector,padding=8){
+  const phone=document.getElementById('phone');
+  const el=phone.querySelector(selector);
+  if(!el){return;}
+  const pr=phone.getBoundingClientRect();
+  const er=el.getBoundingClientRect();
+  const sp=document.getElementById('spotlight');
+  sp.style.display='block';
+  sp.style.left=(er.left-pr.left-padding)+'px';
+  sp.style.top=(er.top-pr.top-padding)+'px';
+  sp.style.width=(er.width+padding*2)+'px';
+  sp.style.height=(er.height+padding*2)+'px';
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────
+function nextStep(){
+  if(currentStep<TOTAL_STEPS-1){currentStep++;goToStep(currentStep);}
+}
+function prevStep(){
+  if(currentStep>0){currentStep--;goToStep(currentStep);}
+}
+function goToStep(s){
+  currentStep=s;
+  updateProgress();
+  clearOverlays();
+  const step=STEPS[s];
+  steps[step]&&steps[step]();
+}
+
+// ── STEP DEFINITIONS ───────────────────────────────────────
+const steps={
+
+  // 0 — WELCOME
+  welcome(){
+    document.getElementById('app-header').style.display='none';
+    document.getElementById('bottom-nav').style.display='none';
+    document.getElementById('content').innerHTML=`
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:32px 16px;">
+        <div style="font-size:64px;margin-bottom:16px;">🌊</div>
+        <div style="font-family:var(--font-display);font-size:32px;color:var(--gray-900);letter-spacing:-1px;margin-bottom:8px;">mo<em style="color:var(--purple);font-style:italic;">v</em>es</div>
+      </div>`;
+    showBottomSheet({
+      emoji:'👋',
+      title:'welcome to moves',
+      body:'This quick tutorial will show you exactly how moves works — from setting up your first group to floating your first plan.',
+      cta:"let's go →",
+      ctaFn:'nextStep()',
+    });
+  },
+
+  // 1 — NAME
+  name(){
+    document.getElementById('content').innerHTML=`
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:32px 16px;">
+        <div style="font-size:48px;margin-bottom:16px;">🙂</div>
+        <div style="font-family:var(--font-display);font-size:24px;color:var(--gray-900);margin-bottom:24px;">what's your name?</div>
+        <input class="input-field" id="name-input" placeholder="your first name" style="text-align:center;font-size:16px;max-width:240px;" />
+      </div>`;
+    showBottomSheet({
+      emoji:null,
+      title:'first things first',
+      body:'What should we call you? This is how you\'ll appear to your friends on moves.',
+      cta:'next →',
+      ctaFn:'saveName()',
+      dim:false,
+    });
+    setTimeout(()=>{const el=document.getElementById('name-input');if(el)el.focus();},300);
+  },
+
+  // 2 — GROUP SETUP
+  'group-setup'(){
+    document.getElementById('content').innerHTML=`
+      <div style="padding:24px 4px;">
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--gray-900);margin-bottom:6px;">your first group 👥</div>
+        <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">Think of a group you hang out with regularly — your friends, roommates, coworkers, whoever.</div>
+        <label style="font-size:12px;font-weight:600;color:var(--gray-500);display:block;margin-bottom:6px;">GROUP NAME</label>
+        <input class="input-field" id="group-name-input" placeholder="e.g. the crew, girlies, roomies" />
+        <label style="font-size:12px;font-weight:600;color:var(--gray-500);display:block;margin-bottom:6px;">ADD FRIENDS (one per line)</label>
+        <textarea class="input-field" id="friends-input" placeholder="e.g.&#10;Tara&#10;Pavi&#10;Kelsey" style="height:110px;resize:none;"></textarea>
+      </div>`;
+    showBottomSheet({
+      emoji:'👥',
+      title:'create your first group',
+      body:'moves is built around friend groups. Add a group name and the people in it — this is where you\'ll float plans together.',
+      cta:'create group →',
+      ctaFn:'saveGroup()',
+      dim:false,
+    });
+  },
+
+  // 3 — ONE-ON-ONE
+  oneonone(){
+    document.getElementById('content').innerHTML=`
+      <div style="padding:24px 4px;">
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--gray-900);margin-bottom:6px;">add a 1:1 ⭐</div>
+        <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">Someone you make plans with one-on-one — a work friend, a close friend, anyone. moves works for 2 people too.</div>
+        <label style="font-size:12px;font-weight:600;color:var(--gray-500);display:block;margin-bottom:6px;">THEIR NAME</label>
+        <input class="input-field" id="oneonone-input" placeholder="e.g. Alex, Jamie, Sam..." />
+      </div>`;
+    showBottomSheet({
+      emoji:'⭐',
+      title:'add someone for 1:1 plans',
+      body:'Not everything is a group plan. Add one person you make plans with — moves creates a private group just for you two.',
+      cta:'add them →',
+      ctaFn:'saveOneonone()',
+      dim:false,
+      skip:'skip for now',
+      skipFn:'skipOneonone()',
+    });
+  },
+
+  // 4 — EXPLORE INTRO
+  'explore-intro'(){
+    document.getElementById('app-header').style.display='block';
+    document.getElementById('bottom-nav').style.display='flex';
+    setActiveTab('explore');
+    renderExplore('event');
+    showBottomSheet({
+      emoji:'🗺',
+      title:'meet the explore page',
+      body:'This is where you discover what\'s happening. moves splits things into two types:<br><br><strong>📅 Events</strong> — fixed date & time (concerts, games, shows)<br><br><strong>🎯 Activities</strong> — open-ended, no date needed (hike, brunch, game night)<br><br>You can mark interest on anything, or <strong>float it to a group</strong> to see who\'s in.',
+      cta:'got it, show me more →',
+      ctaFn:'nextStep()',
+    });
+  },
+
+  // 5 — FLOAT AN EVENT
+  'float-event'(){
+    setActiveTab('explore');
+    renderExplore('event');
+    clearOverlays();
+    setTimeout(()=>{
+      // Bubble pointing just below the toggle, above first card float button
+      showBubble({
+        text:`<strong>try it!</strong> tap the 🌊 float button on any event to share it with <strong>${groupName||'your group'}</strong>`,
+        x:36, y:310,
+        arrow:'up',
+      });
+      document.getElementById('tut-overlay').style.pointerEvents='none';
+      document.querySelectorAll('.float-btn').forEach(btn=>{
+        btn.onclick=()=>doFloatEvent(btn.dataset.evid);
+      });
+    },200);
+  },
+
+  // 6 — GROUP VIEW (explore the page first, then nudge explainer)
+  'group-view'(){
+    setActiveTab('friends');
+    renderGroupView();
+    showBottomSheet({
+      emoji:'🔥',
+      title:'your group sees it instantly',
+      body:`You floated <strong>${getEventTitle(floatedEvId)}</strong> to <strong>${groupName}</strong>. moves automatically shows who\'s interested — sorted by overlap.<br><br>Notice the <strong>🌊 floated by you</strong> tag and the progress bar showing how much overlap you have. Your friends respond at their own pace.`,
+      cta:'explore this page →',
+      ctaFn:'unlockGroupExplore()',
+    });
+  },
+
+  // 6.5 — NUDGE step now auto-skips to add-member (nudging was done on previous free-explore step)
+  'nudge-step'(){
+    // Skip directly — user already tried nudging in the previous step
+    nextStep();
+  },
+
+  // 7 — ADD A MEMBER
+  'add-member'(){
+    setActiveTab('friends');
+    renderGroupViewAddMember();
+    showBottomSheet({
+      emoji:'＋',
+      title:'add someone to the group',
+      body:`When you add a new member, moves <strong>automatically pulls in their existing interests</strong> — so you instantly see overlap on everything already floating.<br><br>Tap the <strong>＋ add member</strong> button and type a name to try it.`,
+      cta:'got it →',
+      ctaFn:'doAddMemberDemo()',
+    });
+  },
+
+  // 8 — ACTIVITIES
+  activities(){
+    setActiveTab('explore');
+    renderExplore('activity');
+    showBottomSheet({
+      emoji:'🎯',
+      title:'activities are different',
+      body:'Activities don\'t have a set date — that\'s the point. Float the <em>idea</em> first, sort out when later.<br><br>You can <strong>suggest date options</strong> when you float, or leave it completely open. No pressure.',
+      cta:'let me float one →',
+      ctaFn:'nextStep()',
+    });
+  },
+
+  // 9 — FLOAT ACTIVITY to 1:1
+  'float-activity'(){
+    setActiveTab('explore');
+    renderExplore('activity');
+    clearOverlays();
+    setTimeout(()=>{
+      showBubble({
+        text:`<strong>float to ${oneoneName||'your 1:1'}!</strong> tap 🌊 on an activity — you can add dates or leave it open`,
+        x:36, y:310,
+        arrow:'up',
+      });
+      document.getElementById('tut-overlay').style.pointerEvents='none';
+      document.querySelectorAll('.float-btn').forEach(btn=>{
+        btn.onclick=()=>doFloatActivity(btn.dataset.evid);
+      });
+    },200);
+  },
+
+  // 10 — FRIEND FLOATED SOMETHING
+  'friend-floated'(){
+    setActiveTab('explore');
+    renderExplore('activity');
+    showBottomSheet({
+      emoji:'🌊',
+      title:`${oneoneName||'your friend'} floated something to you!`,
+      body:`This is how moves works — friends float ideas, and you respond when you\'re ready. No calendar links, no "when are you free?" texts.<br><br>Let\'s respond to it now.`,
+      cta:'respond to it →',
+      ctaFn:'nextStep()',
+    });
+  },
+
+  // 11 — RESPOND
+  respond(){
+    setActiveTab('explore');
+    renderExploreWithFloat();
+    clearOverlays();
+    setTimeout(()=>{
+      // Bubble pointing at the floated-by-friends card, below the toggle
+      showBubble({
+        text:`<strong>tap 🔥 super, ✦ could, or ✕ pass</strong> in the card below to respond`,
+        x:36, y:220,
+        arrow:'down',
+      });
+      document.getElementById('tut-overlay').style.pointerEvents='none';
+      document.querySelectorAll('.respond-btn').forEach(btn=>{
+        btn.onclick=()=>doRespond(btn.dataset.v);
+      });
+    },200);
+  },
+
+  // 12 — SEE IN GROUP
+  'see-group'(){
+    setActiveTab('friends');
+    renderGroupViewFull();
+    showBottomSheet({
+      emoji:'✨',
+      title:'see everyone\'s responses in one place',
+      body:`Back in your <strong>1:1 with ${oneoneName||'your friend'}</strong>, you can see both responses and the dates they proposed. <strong>📅 propose dates</strong> lets you add more options — everyone then marks ✓ works / ✕ can't for each. You can nudge them to fill it in if they haven't.`,
+      cta:'explore the page →',
+      ctaFn:'unlockFinalPage()',
+    });
+  },
+
+  // 13 — CONGRATS
+  congrats(){
+    clearOverlays();
+    document.getElementById('app-header').style.display='none';
+    document.getElementById('bottom-nav').style.display='none';
+    document.getElementById('content').innerHTML=`
+      <div class="congrats">
+        <div class="congrats-emoji">🎉</div>
+        <div class="congrats-title">you got it, <em>${userName||'friend'}</em></div>
+        <div class="congrats-body">
+          Try opening the full interactive demo to play around more with moves!
+        </div>
+        <button class="congrats-cta" onclick="openFullDemo()">try the full demo →</button>
+        <span class="congrats-secondary" onclick="resetTutorial()">↺ restart tutorial</span>
+      </div>`;
+  },
+};
+
+function saveName(){
+  const v=(document.getElementById('name-input')||{}).value.trim();
+  userName=v||'friend';
+  nextStep();
+}
+
+function saveGroup(){
+  const gn=(document.getElementById('group-name-input')||{}).value.trim();
+  const fr=(document.getElementById('friends-input')||{}).value.trim();
+  groupName=gn||'the crew';
+  groupFriends=fr?fr.split('\n').map(s=>s.trim()).filter(Boolean):['Tara','Pavi','Kelsey'];
+  if(!groupFriends.length) groupFriends=['Tara','Pavi','Kelsey'];
+  // Seed member votes — guarantee at least one pending for nudge demo
+  groupMemberVotes={};
+  groupFriends.forEach((m,i)=>{
+    if(i===groupFriends.length-1){
+      groupMemberVotes[m]='pending'; // last member always pending
+    } else {
+      const r=Math.random();
+      groupMemberVotes[m]=r<0.4?'super':r<0.65?'could':'pass';
+    }
+  });
+  nextStep();
+}
+
+function saveOneonone(){
+  const v=(document.getElementById('oneonone-input')||{}).value.trim();
+  oneoneName=v||'Jamie';
+  oneoneGroup=oneoneName+'\'s group';
+  nextStep();
+}
+function skipOneonone(){
+  oneoneName='Jamie'; oneoneGroup='Jamie\'s group'; nextStep();
+}
+
+function setActiveTab(tab){
+  ['friends','explore','profile'].forEach(t=>{
+    const el=document.getElementById('tab-'+t);
+    const nv=document.getElementById('nav-'+t);
+    if(el)el.className='tab'+(t===tab?' active':'');
+    if(nv)nv.className='nav-item'+(t===tab?' active':'');
+  });
+}
+
+// ── RENDER HELPERS ─────────────────────────────────────────
+function renderFriendsPage(){
+  const floatCount=floatedEvId?1:0;
+  const badge=floatCount?`<span style="background:var(--purple);color:white;font-size:10px;font-weight:600;padding:2px 7px;border-radius:var(--r-full);margin-left:6px;">${floatCount} floating</span>`:'';
+  const oobadge=`<span style="font-size:10px;color:var(--gray-500);">1:1</span>`;
+  const gAvs=groupFriends.slice(0,3).map(m=>av(m,'sm')).join('');
+  document.getElementById('content').innerHTML=`
+    <div style="font-family:var(--font-display);font-size:22px;color:var(--gray-900);margin-bottom:14px;">what's the move? <em style="color:var(--purple);">🌊</em></div>
+    <div class="sec-label">your groups</div>
+    <div class="card" id="group-card" onclick="">
+      <div class="card-row">
+        <div class="card-icon">👥</div>
+        <div>
+          <div class="card-title" style="display:flex;align-items:center;">${groupName||'the crew'}${badge}</div>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:6px;">
+            <div style="display:flex;">${gAvs}</div>
+            <span style="font-size:12px;color:var(--gray-500);margin-left:4px;">${groupFriends.length} friends</span>
+          </div>
+        </div>
+        <div style="margin-left:auto;font-size:14px;color:var(--gray-300);">›</div>
+      </div>
+    </div>
+    ${oneoneName?`<div class="card">
+      <div class="card-row">
+        <div class="card-icon">⭐</div>
+        <div>
+          <div class="card-title" style="display:flex;align-items:center;">${oneoneName} ${oobadge}</div>
+          <div style="font-size:12px;color:var(--gray-500);margin-top:2px;">just the two of you</div>
+        </div>
+        <div style="margin-left:auto;font-size:14px;color:var(--gray-300);">›</div>
+      </div>
+    </div>`:''}`;
+}
+
+function renderExplore(tab){
+  exploreTab=tab||exploreTab;
+  const items=tab==='event'?SAMPLE_EVENTS:SAMPLE_ACTIVITIES;
+  let html=`<div style="font-size:12px;color:var(--gray-500);margin-bottom:10px;">📍 San Francisco, CA</div>
+  <div class="type-toggle">
+    <div class="type-btn ${exploreTab==='event'?'active':''}" onclick="switchExploreTab('event')">📅 events</div>
+    <div class="type-btn ${exploreTab==='activity'?'active':''}" onclick="switchExploreTab('activity')">🎯 activities</div>
+  </div>
+  <div style="font-size:11px;color:var(--gray-500);margin:-8px 0 12px;">${exploreTab==='event'?'<strong>events</strong> have a set date & time':'<strong>activities</strong> are open-ended — no date/time needed'}</div>
+  <div class="sec-label">${exploreTab==='event'?'upcoming events':'things to do'}</div>`;
+  items.forEach(ev=>{
+    const v=myVotes[ev.id];
+    html+=`<div class="ev-card" id="ec-${ev.id}">
+      <div style="display:flex;align-items:flex-start;gap:12px;padding-right:60px;">
+        <div class="ev-icon" style="background:var(--gray-50);">${ev.emoji}</div>
+        <div>
+          <div class="ev-title">${ev.title}</div>
+          <div class="ev-meta">${ev.meta}</div>
+        </div>
+      </div>
+      <button class="float-btn" data-evid="${ev.id}">🌊 float</button>
+      <div class="v3row">
+        <button class="v3btn ${v==='super'?'super':''}" onclick="quickVote('${ev.id}','super')">🔥 super</button>
+        <button class="v3btn ${v==='could'?'could':''}" onclick="quickVote('${ev.id}','could')">✦ could</button>
+        <button class="v3btn ${v==='pass'?'pass':''}" onclick="quickVote('${ev.id}','pass')">✕ pass</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('content').innerHTML=html;
+}
+
+function switchExploreTab(tab){
+  exploreTab=tab;
+  renderExplore(tab);
+  // re-wire float buttons for current tutorial step
+  const step=STEPS[currentStep];
+  if(step==='float-event'||step==='float-activity'){
+    document.querySelectorAll('.float-btn').forEach(btn=>{
+      btn.onclick=step==='float-event'?()=>doFloatEvent(btn.dataset.evid):()=>doFloatActivity(btn.dataset.evid);
+    });
+  }
+}
+
+function quickVote(evId,v){myVotes[evId]=myVotes[evId]===v?null:v;renderExplore();}
+
+function renderExploreWithFloat(){
+  const fEv={id:'af1',type:'activity',emoji:'🥾',title:'Day hike',meta:'Outdoor / active',floatedBy:oneoneName||'Jamie',dateOptions:['Jun 14 · 10am','Jun 21 · 10am']};
+  const v=myVotes['af1'];
+  const myDV=myDateVotes['af1']||{};
+  const responded=!!v;
+  let html=`<div style="font-size:12px;color:var(--gray-500);margin-bottom:10px;">📍 San Francisco, CA</div>
+  <div class="type-toggle">
+    <div class="type-btn">📅 events</div>
+    <div class="type-btn active">🎯 activities</div>
+  </div>
+  <div style="font-size:11px;color:var(--gray-500);margin:-8px 0 12px;"><strong>activities</strong> are open-ended — no date/time needed</div>
+  <div class="floated-banner">
+    <div style="font-size:12px;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">🌊 floated by your friends</div>
+    ${!responded?`<div style="font-size:10px;font-weight:700;color:#8C5100;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">needs your response (1)</div>
+    <div style="background:white;border-radius:var(--r-lg);padding:12px 14px;border:1px solid var(--purple-mid);box-shadow:var(--shadow-sm);">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🥾</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:500;color:var(--gray-900);">${fEv.title}</div>
+          <div style="font-size:11px;color:var(--purple);font-style:italic;margin-top:2px;">🌊 floated by ${fEv.floatedBy} to <strong>your group</strong></div>
+        </div>
+      </div>
+      <div style="font-size:10px;font-weight:600;color:var(--gray-500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px;">📅 proposed dates</div>
+      ${fEv.dateOptions.map((d,i)=>{const dv=myDV[i];return`<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+        <span style="font-size:12px;color:var(--gray-700);flex:1;">📅 ${d}</span>
+        <button class="respond-btn" data-v="yes-${i}" style="padding:4px 10px;border-radius:var(--r-full);border:1.5px solid ${dv==='yes'?'var(--green)':'var(--gray-200)'};background:${dv==='yes'?'var(--green-light)':'white'};color:${dv==='yes'?'#0F6E56':'var(--gray-500)'};font-size:12px;font-weight:700;cursor:pointer;">✓</button>
+        <button class="respond-btn" data-v="no-${i}" style="padding:4px 10px;border-radius:var(--r-full);border:1.5px solid ${dv==='no'?'var(--red)':'var(--gray-200)'};background:${dv==='no'?'var(--red-light)':'white'};color:${dv==='no'?'#A32D2D':'var(--gray-500)'};font-size:12px;font-weight:700;cursor:pointer;">✕</button>
+      </div>`;}).join('')}
+      <div class="v3row respond-area" style="margin-top:8px;">
+        <button class="v3btn respond-btn" data-v="super">🔥 super</button>
+        <button class="v3btn respond-btn" data-v="could">✦ could</button>
+        <button class="v3btn respond-btn" data-v="pass">✕ pass</button>
+      </div>
+    </div>`
+    :`<div style="font-size:10px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">responded (1) ▼</div>
+    <div style="background:white;border-radius:var(--r-lg);padding:10px 14px;border:1px solid var(--purple-mid);opacity:.85;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:32px;height:32px;border-radius:8px;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🥾</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--gray-900);">${fEv.title}</div>
+          <div style="font-size:11px;color:var(--purple);font-style:italic;">🌊 floated by ${fEv.floatedBy}</div>
+        </div>
+        <span class="pill ${v==='super'?'pill-super':v==='could'?'pill-could':'pill-pass'}">${v==='super'?'🔥 super':v==='could'?'✦ could':'✕ pass'}</span>
+      </div>
+      <button onclick="goToStep(STEPS.indexOf('see-group'))" style="margin-top:8px;font-size:12px;font-weight:600;color:var(--purple);background:var(--purple-light);border:1px solid var(--purple-mid);border-radius:var(--r-full);padding:4px 14px;cursor:pointer;font-family:var(--font-main);">view in group →</button>
+    </div>`}
+  </div>
+  <div class="sec-label">things to do</div>
+  ${SAMPLE_ACTIVITIES.slice(0,2).map(ev=>`<div class="ev-card">
+    <div style="display:flex;align-items:flex-start;gap:12px;padding-right:60px;">
+      <div class="ev-icon" style="background:var(--gray-50);">${ev.emoji}</div>
+      <div><div class="ev-title">${ev.title}</div><div class="ev-meta">${ev.meta}</div></div>
+    </div>
+    <button class="float-btn" style="cursor:default;">🌊 float</button>
+    <div class="v3row"><button class="v3btn">🔥 super</button><button class="v3btn">✦ could</button><button class="v3btn">✕ pass</button></div>
+  </div>`).join('')}`;
+  document.getElementById('content').innerHTML=html;
+}
+
+function renderGroupView(){
+  const ev=SAMPLE_EVENTS.find(e=>e.id===floatedEvId)||SAMPLE_ACTIVITIES.find(e=>e.id===floatedEvId)||SAMPLE_EVENTS[0];
+  const total=groupFriends.length+1;
+  let supCount=1,couCount=0;
+  const memberRows=groupFriends.map(m=>{
+    const v=groupMemberVotes[m]||'pending';
+    if(v==='super')supCount++;else if(v==='could')couCount++;
+    return{name:m,v};
+  });
+  const pct=Math.round(((supCount+couCount)/total)*100);
+  let html=`<div class="back-btn" style="display:flex;align-items:center;gap:6px;font-size:14px;color:var(--purple);font-weight:500;cursor:pointer;margin-bottom:14px;">‹ all groups</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <span style="font-size:24px;">👥</span>
+    <span style="font-size:18px;font-weight:600;color:var(--gray-900);">${groupName}</span>
+  </div>
+  <div style="border:2px solid var(--purple-mid);box-shadow:0 0 0 3px var(--purple-light);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span style="font-size:18px;">${ev.emoji}</span>
+      <div style="flex:1;"><div style="font-size:14px;font-weight:500;">${ev.title}</div>
+        <div style="font-size:11px;color:var(--purple);font-style:italic;">🌊 floated by you</div>
+      </div>
+      <span style="background:var(--purple-light);color:var(--purple);font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);">🔥${supCount} ✦${couCount}</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill-bar" style="width:${pct}%"></div></div>
+    <div class="member-row">${av(userName||'you','sm')}<span class="member-name">${userName||'you'} (you)</span><span class="pill pill-super">🔥 super</span></div>
+    ${memberRows.map(r=>`<div class="member-row">${av(r.name,'sm')}<span class="member-name">${r.name}</span>
+      ${r.v==='super'?'<span class="pill pill-super">🔥 super</span>':r.v==='could'?'<span class="pill pill-could">✦ could</span>':r.v==='pass'?'<span class="pill pill-pass">✕ pass</span>':'<span class="pill pill-pending">pending</span><button class="nudge-btn" id="nudge-'+r.name+'">nudge 👋</button>'}
+    </div>`).join('')}
+  </div>`;
+  document.getElementById('content').innerHTML=html;
+  document.querySelectorAll('.nudge-btn').forEach(b=>{
+    b.onclick=()=>{b.className='nudge-sent';b.textContent='nudged 👋';};
+  });
+}
+
+function renderGroupViewFull(){
+  const oName=oneoneName||'Jamie';
+  const myV=myVotes['af1']||'super';
+  let supCount=myV==='super'?1:0,couCount=myV==='could'?1:0; supCount++; // 1:1 always super
+  const pct=Math.round((supCount/2)*100);
+  // Proposed dates: 1:1 person proposed two, user may have proposed one more via the modal
+  const baseDates=['Jun 14 · 10am','Jun 21 · 10am'];
+  const userDates=window._hikeProposedDates||[];  // dates added via 'propose dates' on the hike
+  const allDates=[...baseDates,...userDates];
+  // Responses: oResponses indexed by date. User's responses from respond step.
+  const oResponses={0:'yes',1:'no'}; // 1:1 person filled theirs in
+  const myResponses=myDateVotes['af1']||{};
+  // Build table: rows = people, cols = dates (like main demo)
+  function buildDateTable(){
+    // Header row: empty cell + one cell per date
+    let hdr=`<tr><th style="text-align:left;font-size:10px;color:var(--gray-700);padding:4px 6px 4px 0;font-weight:600;min-width:70px;"></th>`;
+    allDates.forEach((d,i)=>{
+      const isUserDate=i>=baseDates.length;
+      hdr+=`<th style="text-align:center;font-size:10px;color:${isUserDate?'var(--purple)':'var(--gray-700)'};font-weight:600;padding:4px 6px;white-space:nowrap;">${d.replace(' · ','<br>')}</th>`;
+    });
+    hdr+=`</tr>`;
+    // Row for user
+    let myRow=`<tr><td style="font-size:11px;color:var(--gray-700);padding:4px 8px 4px 0;">${userName||'you'} (you)</td>`;
+    allDates.forEach((_,i)=>{
+      const v=myResponses[i];
+      const isUserDate=i>=baseDates.length;
+      // User's own proposed date is auto-yes (green)
+      const displayV=isUserDate?'yes':v;
+      const yStyle=`background:#1DB97A;color:white;`;const nStyle=`background:#F04E4E;color:white;`;
+      myRow+=`<td style="text-align:center;padding:4px 6px;"><div style="display:flex;gap:2px;justify-content:center;">
+        <button onclick="setTutDateAvail(${i},'yes')" style="padding:2px 7px;border-radius:4px;border:none;font-size:11px;font-weight:700;cursor:pointer;${displayV==='yes'?yStyle:'background:var(--gray-100);color:var(--gray-500);'}">✓</button>
+        <button onclick="setTutDateAvail(${i},'no')" style="padding:2px 7px;border-radius:4px;border:none;font-size:11px;font-weight:700;cursor:pointer;${displayV==='no'?nStyle:'background:var(--gray-100);color:var(--gray-500);'}">✕</button>
+      </div></td>`;
+    });
+    myRow+=`</tr>`;
+    // Row for 1:1 person
+    const oName2=oName;
+    let oRow=`<tr><td style="font-size:11px;color:var(--gray-700);padding:4px 8px 4px 0;">${oName2}</td>`;
+    allDates.forEach((_,i)=>{
+      const v=oResponses[i];
+      const isUserDate=i>=baseDates.length;
+      // User-proposed dates: 1:1 person hasn't responded yet → show nudge
+      if(isUserDate){
+        oRow+=`<td style="text-align:center;padding:4px 6px;"><button class="nudge-btn" style="font-size:10px;padding:2px 7px;white-space:nowrap;">nudge 👋</button></td>`;
+      } else {
+        oRow+=`<td style="text-align:center;padding:4px 6px;">${v==='yes'?`<span style="font-size:13px;color:#1DB97A;">✓</span>`:v==='no'?`<span style="font-size:13px;color:#F04E4E;">✕</span>`:`<span style="font-size:12px;color:var(--gray-300);">?</span>`}</td>`;
+      }
+    });
+    oRow+=`</tr>`;
+    return `<table style="width:100%;border-collapse:collapse;">${hdr}${myRow}${oRow}</table>`;
+  }
+  let html=`<div class="back-btn" style="display:flex;align-items:center;gap:6px;font-size:14px;color:var(--purple);font-weight:500;cursor:pointer;margin-bottom:12px;">‹ all groups</div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+    <span style="font-size:20px;">⭐</span>
+    <span style="font-size:17px;font-weight:600;color:var(--gray-900);">${oName}</span>
+    <span style="font-size:11px;color:var(--gray-500);background:var(--gray-100);padding:2px 8px;border-radius:var(--r-full);">1:1</span>
+  </div>
+  <div style="border:2px solid var(--purple-mid);box-shadow:0 0 0 3px var(--purple-light);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span style="font-size:18px;">🥾</span>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:500;">Day hike</div>
+        <div style="font-size:11px;color:var(--purple);font-style:italic;">🌊 floated by ${oName}</div>
+      </div>
+      <span style="background:var(--purple-light);color:var(--purple);font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);">🔥${supCount} ✦${couCount}</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill-bar" style="width:${pct}%"></div></div>
+    <div class="member-row">${av(userName||'you','sm')}<span class="member-name">${userName||'you'} (you)</span>
+      <span class="pill ${myV==='super'?'pill-super':'pill-could'}">${myV==='super'?'🔥 super':'✦ could'}</span>
+    </div>
+    <div class="member-row">${av(oName,'sm')}<span class="member-name">${oName}</span>
+      <span class="pill pill-super">🔥 super</span>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--gray-100);">
+      <div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">📅 date availability</div>
+      ${buildDateTable()}
+      ${userDates.length?'':`<div style="font-size:11px;color:var(--gray-400);margin-top:6px;font-style:italic;">tap "propose dates" to suggest more times</div>`}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--gray-100);">
+      <button onclick="showTextGroupDemo()" style="flex:1;padding:8px;border-radius:var(--r-md);font-size:12px;font-weight:500;border:1px solid var(--purple-mid);background:var(--purple-light);color:var(--purple);cursor:pointer;font-family:var(--font-main);">💬 text ${oName}</button>
+      <button onclick="showProposeDatesFullDemo()" style="padding:8px 12px;border-radius:var(--r-md);font-size:12px;font-weight:500;border:1px solid var(--gray-200);background:var(--gray-50);color:var(--gray-500);cursor:pointer;font-family:var(--font-main);">📅 propose dates</button>
+    </div>
+  </div>`;
+  // Also show the event the user floated to the 1:1, if we have one
+  const actEv=SAMPLE_ACTIVITIES.find(e=>e.id===floatedActivityId)||SAMPLE_ACTIVITIES[0];
+  const actSupCount=2,actPct=100;
+  const actDates=window._floatActivityDates||[];
+  html+=`<div style="border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:10px;background:var(--white);">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span style="font-size:18px;">${actEv.emoji}</span>
+      <div style="flex:1;"><div style="font-size:14px;font-weight:500;">${actEv.title}</div>
+        <div style="font-size:11px;color:var(--purple);font-style:italic;">🌊 floated by you</div>
+      </div>
+      <span style="background:var(--purple-light);color:var(--purple);font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);">🔥${actSupCount}</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill-bar" style="width:${actPct}%"></div></div>
+    <div class="member-row">${av(userName||'you','sm')}<span class="member-name">${userName||'you'} (you)</span><span class="pill pill-super">🔥 super</span></div>
+    <div class="member-row">${av(oName,'sm')}<span class="member-name">${oName}</span><span class="pill pill-super">🔥 super</span></div>
+    ${actDates.length?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--gray-100);">
+      <div style="font-size:10px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;">📅 proposed dates</div>
+      ${actDates.map(d=>`<div style="font-size:12px;color:var(--gray-700);padding:3px 0;">📅 ${d} <span style="color:#1DB97A;font-size:12px;">✓ you</span> <span style="color:var(--gray-400);font-size:10px;margin-left:4px;">· ${oName}: ?</span></div>`).join('')}
+    </div>`:''}
+  </div>`;
+  document.getElementById('content').innerHTML=html;
+  document.querySelectorAll('.nudge-btn').forEach(b=>{b.onclick=()=>{b.className='nudge-sent';b.textContent='nudged 👋';};});
+}
+
+// ── TUTORIAL ACTIONS ───────────────────────────────────────
+function doFloatEvent(evId){
+  floatedEvId=evId;
+  // Show a quick float confirmation bubble then advance
+  clearOverlays();
+  const btn=document.querySelector(`#ec-${evId} .float-btn`);
+  if(btn){
+    btn.textContent='✓ floated!';
+    btn.style.background='var(--green-light)';
+    btn.style.borderColor='var(--green)';
+    btn.style.color='#0F6E56';
+  }
+  setTimeout(()=>{
+    showBubble({x:60,y:190,arrow:'up',
+      text:`<strong>floated to ${groupName}!</strong> your friends can now see and respond to this.`,
+      tapLabel:'see it in your group',
+      tapFn:'goToStep(STEPS.indexOf(\'group-view\'))',
+    });
+  },500);
+}
+
+function doFloatActivity(evId){
+  // Show date option modal feel
+  clearOverlays();
+  const phone=document.getElementById('phone');
+  const ov=document.getElementById('tut-overlay');
+  ov.style.pointerEvents='auto';
+  window._lastFloatActivityId=evId;
+  const btn=document.querySelector(`#ec-${evId} .float-btn`);
+  if(btn){btn.textContent='✓ floated!';btn.style.background='var(--green-light)';btn.style.borderColor='var(--green)';btn.style.color='#0F6E56';}
+  ov.innerHTML=`<div style="position:absolute;inset:0;background:rgba(28,26,23,.5);border-radius:44px;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--white);border-radius:var(--r-xl);padding:22px 20px;width:100%;box-shadow:var(--shadow-lg);">
+      <div style="font-size:17px;font-weight:600;color:var(--gray-900);margin-bottom:4px;">🌊 float to ${oneoneName}</div>
+      <div style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">${getActivityTitle(evId)}</div>
+      <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:8px;">suggest date options — optional</div>
+      <input id="float-date-opt-1" class="input-field" placeholder="Option 1: e.g. Jun 14 · 7pm" style="margin-bottom:6px;"/>
+      <input id="float-date-opt-2" class="input-field" placeholder="Option 2 — optional"/>
+      <div style="font-size:12px;color:var(--purple);background:var(--purple-light);border-radius:var(--r-md);padding:8px 12px;margin-bottom:14px;line-height:1.5;">
+        💡 leave blank and you can add dates later — no pressure now
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button style="flex:1;padding:11px;border-radius:var(--r-md);font-size:14px;font-weight:500;background:var(--gray-100);color:var(--gray-500);border:none;cursor:pointer;font-family:var(--font-main);" onclick="clearOverlays()">cancel</button>
+        <button style="flex:2;padding:11px;border-radius:var(--r-md);font-size:14px;font-weight:600;background:var(--purple);color:white;border:none;cursor:pointer;font-family:var(--font-main);" onclick="confirmActivityFloat()">float it 🌊</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function confirmActivityFloat(){
+  floatedActivityId=window._lastFloatActivityId||'a1';
+  // Capture any dates the user typed in the float modal
+  const d1=document.getElementById('float-date-opt-1');
+  const d2=document.getElementById('float-date-opt-2');
+  if(!window._floatActivityDates) window._floatActivityDates=[];
+  if(d1&&d1.value.trim()) window._floatActivityDates.push(d1.value.trim());
+  if(d2&&d2.value.trim()) window._floatActivityDates.push(d2.value.trim());
+  clearOverlays();
+  setTimeout(()=>{
+    showBubble({x:60,y:220,arrow:'up',
+      text:`<strong>floated to ${oneoneName}!</strong> they'll see it and can respond when they're ready.`,
+      tapLabel:'continue',
+      tapFn:'nextStep()',
+    });
+  },300);
+}
+
+function doRespond(v){
+  if(v.startsWith('yes-')){
+    const i=parseInt(v.split('-')[1]);
+    if(!myDateVotes['af1'])myDateVotes['af1']={};
+    myDateVotes['af1'][i]=myDateVotes['af1'][i]==='yes'?null:'yes';
+    renderExploreWithFloat();
+    // re-wire
+    document.querySelectorAll('.respond-btn').forEach(btn=>{btn.onclick=()=>doRespond(btn.dataset.v);});
+    return;
+  }
+  if(v.startsWith('no-')){
+    const i=parseInt(v.split('-')[1]);
+    if(!myDateVotes['af1'])myDateVotes['af1']={};
+    myDateVotes['af1'][i]=myDateVotes['af1'][i]==='no'?null:'no';
+    renderExploreWithFloat();
+    document.querySelectorAll('.respond-btn').forEach(btn=>{btn.onclick=()=>doRespond(btn.dataset.v);});
+    return;
+  }
+  myVotes['af1']=v;
+  renderExploreWithFloat();
+  setTimeout(()=>{
+    showBubble({x:40,y:280,arrow:'up',
+      text:`<strong>response saved!</strong> now let's see how it looks in the group view.`,
+      tapLabel:'see in group',
+      tapFn:'nextStep()',
+    });
+    document.getElementById('tut-overlay').style.pointerEvents='none';
+  },300);
+}
+
+function showNudgeExplainer(){
+  clearOverlays();
+  setTimeout(()=>{
+    // Spotlight nudge buttons
+    showBottomSheet({
+      emoji:'👋',
+      title:'nudge friends who haven\'t responded',
+      body:`See the <strong>"nudge 👋"</strong> button next to anyone who\'s still pending? One tap sends them a gentle ping — no awkward "hey did you see my message?" texts.<br><br>moves handles the follow-up for you.`,
+      cta:'on to activities →',
+      ctaFn:'nextStep()',
+    });
+  },200);
+}
+
+function getEventTitle(id){
+  return(SAMPLE_EVENTS.find(e=>e.id===id)||{}).title||'this event';
+}
+function getActivityTitle(id){
+  return(SAMPLE_ACTIVITIES.find(e=>e.id===id)||{}).title||'this activity';
+}
+
+function openFullDemo(){
+  // Pass user-entered data as URL params so the full demo can pre-populate
+  const params=new URLSearchParams({
+    name: userName||'',
+    group: groupName||'',
+    friends: groupFriends.filter(f=>f!==addedMember).join(','),
+    oneonone: oneoneName||''
+  });
+  window.open('moves_demo.html?'+params.toString(),'_blank');
+}
+
+function unlockGroupExplore(){
+  clearOverlays();
+  // Append continue button into content so it's always scrollable/visible
+  setTimeout(()=>{
+    const cont=document.createElement('div');
+    cont.id='group-cont-btn';
+    cont.style.cssText='margin-top:16px;padding:0;';
+    cont.innerHTML=`<div style="font-size:12px;color:var(--gray-500);text-align:center;margin-bottom:8px;">try nudging someone pending, then continue</div>
+      <button onclick="nextStep()" style="width:100%;padding:12px;border-radius:var(--r-md);background:var(--purple);color:white;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-main);">continue →</button>`;
+    document.getElementById('content').appendChild(cont);
+    window._contBtn=cont;
+  },200);
+}
+
+function renderGroupViewAddMember(){
+  const ev=SAMPLE_EVENTS.find(e=>e.id===floatedEvId)||SAMPLE_EVENTS[0];
+  // Exclude addedMember from regular rows (shown separately with highlight)
+  const baseMembers=groupFriends.filter(m=>m!==addedMember);
+  let supCount=1,couCount=0;
+  const memberRows=baseMembers.map(m=>{const v=groupMemberVotes[m]||'pending';if(v==='super')supCount++;else if(v==='could')couCount++;return{name:m,v};});
+  // Count added member too
+  if(addedMember){const av2=groupMemberVotes[addedMember];if(av2==='super')supCount++;else if(av2==='could')couCount++;}
+  const total=groupFriends.length+1;
+  const pct=Math.round(((supCount+couCount)/total)*100);
+  // Extra items in the group that weren't floated but have some interest (to make sorting meaningful)
+  // Extra items: use events NOT matching the one the user floated
+  const otherEvents=SAMPLE_EVENTS.filter(e=>e.id!==floatedEvId);
+  const extraItems=[
+    {emoji:otherEvents[0]?otherEvents[0].emoji:'⚾',title:otherEvents[0]?otherEvents[0].title:'Giants game',sup:2,cou:1},
+    {emoji:'🍹',title:'Bar crawl — anytime',sup:1,cou:2},
+  ];
+  document.getElementById('content').innerHTML=`
+    <div class="back-btn" style="display:flex;align-items:center;gap:6px;font-size:14px;color:var(--purple);font-weight:500;cursor:pointer;margin-bottom:10px;">‹ all groups</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="font-size:22px;">👥</span>
+      <span style="font-size:17px;font-weight:600;color:var(--gray-900);flex:1;">${groupName}</span>
+      <button onclick="openAddMemberInput()" id="add-member-btn" style="font-size:12px;font-weight:600;color:var(--gray-700);background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--r-full);padding:5px 12px;cursor:pointer;font-family:var(--font-main);">＋ add member</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
+      <span style="font-size:11px;color:var(--gray-500);">sorted by</span>
+      <select onchange="switchSort(this.value)" style="font-size:11px;color:var(--purple);font-weight:600;border:1px solid var(--purple-mid);background:var(--purple-light);border-radius:var(--r-full);padding:3px 8px;cursor:pointer;font-family:var(--font-main);outline:none;">
+        <option value="floated">🌊 floated first</option>
+        <option value="overlap">🔥 most overlap</option>
+        <option value="date">📅 date/time</option>
+      </select>
+    </div>
+    <div id="add-member-area"></div>
+    <div style="border:2px solid var(--purple-mid);box-shadow:0 0 0 3px var(--purple-light);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-size:18px;">${ev.emoji}</span>
+        <div style="flex:1;"><div style="font-size:14px;font-weight:500;">${ev.title}</div>
+          <div style="font-size:11px;color:var(--purple);font-style:italic;">🌊 floated by you</div>
+        </div>
+        <span style="background:var(--purple-light);color:var(--purple);font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);">🔥${supCount} ✦${couCount}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill-bar" style="width:${pct}%"></div></div>
+      <div class="member-row">${av(userName||'you','sm')}<span class="member-name">${userName||'you'} (you)</span><span class="pill pill-super">🔥 super</span></div>
+      ${memberRows.map(r=>`<div class="member-row">${av(r.name,'sm')}<span class="member-name">${r.name}</span>
+        ${r.v==='super'?'<span class="pill pill-super">🔥 super</span>':r.v==='could'?'<span class="pill pill-could">✦ could</span>':r.v==='pass'?'<span class="pill pill-pass">✕ pass</span>':'<span class="pill pill-pending">pending</span><button class="nudge-btn">nudge 👋</button>'}
+      </div>`).join('')}
+      ${addedMember?`<div class="member-row" style="background:var(--purple-light);border-radius:var(--r-md);padding:8px 6px;margin-top:4px;">${av(addedMember,'sm')}<span class="member-name" style="color:var(--purple);font-weight:500;">${addedMember} <span style="font-size:10px;font-weight:400;">(just added — interest auto-loaded ✓)</span></span><span class="pill ${groupMemberVotes[addedMember]==='super'?'pill-super':'pill-could'}">${groupMemberVotes[addedMember]==='super'?'🔥 super':'✦ could'}</span></div>`:''}
+    </div>
+    ${extraItems.map(item=>`<div style="border:1px solid var(--gray-100);border-radius:var(--r-lg);padding:10px 12px;margin-bottom:8px;background:var(--white);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span style="font-size:16px;">${item.emoji}</span>
+        <div style="flex:1;font-size:14px;font-weight:500;">${item.title}</div>
+        <span style="background:var(--purple-light);color:var(--purple);font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);">🔥${item.sup} ✦${item.cou}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill-bar" style="width:${Math.round(((item.sup+item.cou)/(total))*100)}%"></div></div>
+    </div>`).join('')}`;
+  document.querySelectorAll('.nudge-btn').forEach(b=>{b.onclick=()=>{b.className='nudge-sent';b.textContent='nudged 👋';};});
+}
+
+function openAddMemberInput(){
+  document.getElementById('add-member-area').innerHTML=`
+    <div style="display:flex;gap:6px;margin-bottom:12px;align-items:center;">
+      <input class="input-field" id="new-member-input" placeholder="their name" style="margin-bottom:0;flex:1;" />
+      <button onclick="saveNewMember()" style="padding:9px 14px;border-radius:var(--r-md);background:var(--purple);color:white;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-main);flex-shrink:0;">add</button>
+    </div>
+    <div style="font-size:12px;color:var(--purple);background:var(--purple-light);border-radius:var(--r-md);padding:8px 12px;margin-bottom:12px;line-height:1.5;">
+      💡 once added, their existing interests auto-appear on all this group's moves
+    </div>`;
+  setTimeout(()=>document.getElementById('new-member-input')&&document.getElementById('new-member-input').focus(),100);
+}
+
+function saveNewMember(){
+  const el=document.getElementById('new-member-input');
+  const name=(el&&el.value.trim())||'Alex';
+  addedMember=name;
+  groupFriends.push(name);
+  const r=Math.random();
+  // Always assign a real response (never pending) to demo auto-load
+  groupMemberVotes[name]=r<0.55?'super':'could';
+  renderGroupViewAddMember();
+  // Show a bubble confirming
+  setTimeout(()=>{
+    showBubble({
+      text:`<strong>${name} added!</strong> their interest in "${getEventTitle(floatedEvId)}" appeared automatically ✓`,
+      x:30,y:490,arrow:'up',
+    });
+    document.getElementById('tut-overlay').style.pointerEvents='none';
+    const cont=document.createElement('div');
+    cont.id='member-cont-btn';
+    cont.style.cssText='margin-top:16px;padding:0;';
+    cont.innerHTML='<button onclick="nextStep()" style="width:100%;padding:12px;border-radius:var(--r-md);background:var(--purple);color:white;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-main);">continue →</button>';
+    document.getElementById('content').appendChild(cont);
+    window._contBtn=cont;
+  },300);
+}
+
+function doAddMemberDemo(){
+  // Close the bottom sheet and let them interact
+  clearOverlays();
+  renderGroupViewAddMember();
+  setTimeout(()=>{
+    showBubble({
+      text:'<strong>tap ＋ add member</strong> and type any name to see how their interests appear automatically',
+      x:30,y:170,arrow:'up',
+    });
+    document.getElementById('tut-overlay').style.pointerEvents='none';
+  },300);
+}
+
+function showTextGroupDemo(){
+  const ev=SAMPLE_EVENTS.find(e=>e.id===floatedEvId)||SAMPLE_EVENTS[0];
+  const members=groupFriends.slice(0,3).join(', ');
+  const msg=`hey y'all, saw we have ${Math.min(groupFriends.length,3)}/${groupFriends.length+1} overlap for ${ev.title} — who's down? 👀`;
+  const ov=document.getElementById('tut-overlay');
+  ov.style.pointerEvents='auto';
+  ov.innerHTML=`<div style="position:absolute;inset:0;background:rgba(28,26,23,.5);border-radius:44px;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--white);border-radius:var(--r-xl);padding:22px 20px;width:100%;box-shadow:var(--shadow-lg);">
+      <div style="font-size:16px;font-weight:600;margin-bottom:4px;">💬 text ${groupName}</div>
+      <div style="font-size:12px;color:var(--gray-500);margin-bottom:12px;">to: ${members}${groupFriends.length>3?'...':''}</div>
+      <textarea style="width:100%;padding:10px;border:1px solid var(--gray-200);border-radius:var(--r-md);font-size:13px;font-family:var(--font-main);resize:none;height:80px;outline:none;">${msg}</textarea>
+      <div style="font-size:11px;color:var(--gray-500);margin:8px 0 14px;">moves pre-fills a message with the overlap — just edit and send</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="clearTutOverlay()" style="flex:1;padding:10px;border-radius:var(--r-md);font-size:13px;font-weight:500;background:var(--gray-100);color:var(--gray-500);border:none;cursor:pointer;font-family:var(--font-main);">close</button>
+        <button style="flex:2;padding:10px;border-radius:var(--r-md);font-size:13px;font-weight:600;background:var(--purple);color:white;border:none;cursor:pointer;font-family:var(--font-main);">open in messages</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function showProposeDatesDemo(){
+  const ov=document.getElementById('tut-overlay');
+  ov.style.pointerEvents='auto';
+  ov.innerHTML=`<div style="position:absolute;inset:0;background:rgba(28,26,23,.5);border-radius:44px;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--white);border-radius:var(--r-xl);padding:22px 20px;width:100%;box-shadow:var(--shadow-lg);">
+      <div style="font-size:16px;font-weight:600;margin-bottom:4px;">📅 propose dates</div>
+      <div style="font-size:12px;color:var(--gray-500);margin-bottom:14px;">suggest options and everyone marks ✓ works / ✕ can't</div>
+      <input style="width:100%;padding:9px 12px;border:1px solid var(--gray-200);border-radius:var(--r-md);font-size:13px;font-family:var(--font-main);margin-bottom:8px;outline:none;" placeholder="Option 1: e.g. Jun 14 · 7pm" />
+      <input style="width:100%;padding:9px 12px;border:1px solid var(--gray-200);border-radius:var(--r-md);font-size:13px;font-family:var(--font-main);margin-bottom:14px;outline:none;" placeholder="Option 2 — optional" />
+      <div style="display:flex;gap:8px;">
+        <button onclick="clearTutOverlay()" style="flex:1;padding:10px;border-radius:var(--r-md);font-size:13px;font-weight:500;background:var(--gray-100);color:var(--gray-500);border:none;cursor:pointer;font-family:var(--font-main);">cancel</button>
+        <button onclick="clearTutOverlay()" style="flex:2;padding:10px;border-radius:var(--r-md);font-size:13px;font-weight:600;background:var(--purple);color:white;border:none;cursor:pointer;font-family:var(--font-main);">propose & nudge 🌊</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function showProposeDatesFullDemo(){
+  const ov=document.getElementById('tut-overlay');
+  ov.style.pointerEvents='auto';
+  ov.innerHTML=`<div style="position:absolute;inset:0;background:rgba(28,26,23,.5);border-radius:44px;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--white);border-radius:var(--r-xl);padding:22px 20px;width:100%;box-shadow:var(--shadow-lg);">
+      <div style="font-size:16px;font-weight:600;margin-bottom:4px;">📅 propose a date</div>
+      <div style="font-size:12px;color:var(--purple);background:var(--purple-light);border-radius:var(--r-md);padding:8px 12px;margin-bottom:12px;line-height:1.5;">
+        💡 once you propose, ${oneoneName||'your friend'} will get a nudge to mark ✓ / ✕ for each option
+      </div>
+      <input id="propose-date-input" style="width:100%;padding:9px 12px;border:1px solid var(--gray-200);border-radius:var(--r-md);font-size:13px;font-family:var(--font-main);margin-bottom:14px;outline:none;" placeholder="e.g. Jun 28 · 2pm" />
+      <div style="display:flex;gap:8px;">
+        <button onclick="clearTutOverlay()" style="flex:1;padding:10px;border-radius:var(--r-md);font-size:13px;font-weight:500;background:var(--gray-100);color:var(--gray-500);border:none;cursor:pointer;font-family:var(--font-main);">cancel</button>
+        <button onclick="applyProposedDate()" style="flex:2;padding:10px;border-radius:var(--r-md);font-size:13px;font-weight:600;background:var(--purple);color:white;border:none;cursor:pointer;font-family:var(--font-main);">propose & nudge 🌊</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function applyProposedDate(){
+  const input=document.getElementById('propose-date-input');
+  const val=(input&&input.value.trim())||'Jun 28 · 2pm';
+  if(!window._hikeProposedDates) window._hikeProposedDates=[];
+  if(!window._hikeProposedDates.includes(val)) window._hikeProposedDates.push(val);
+  clearTutOverlay();
+  renderGroupViewFull();
+  appendFinalContinueBtn();
+  // Show a confirmation bubble
+  setTimeout(()=>{
+    const bw=document.getElementById('bubble-wrap');
+    bw.style.display='block'; bw.style.left='30px'; bw.style.top='460px';
+    bw.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;">
+      <div class="bubble" style="max-width:240px;">date added! <strong>${oneoneName||'your friend'}</strong> will get a nudge to mark their availability.<br><span class="bubble-tap" onclick="clearBubble()">got it ✓</span></div>
+    </div>`;
+    document.getElementById('tut-overlay').style.pointerEvents='none';
+  },200);
+}
+
+function clearBubble(){
+  const bw=document.getElementById('bubble-wrap');
+  bw.style.display='none'; bw.innerHTML='';
+}
+
+function setTutDateAvail(i,v){
+  if(!myDateVotes['af1']) myDateVotes['af1']={};
+  myDateVotes['af1'][i]=myDateVotes['af1'][i]===v?null:v;
+  renderGroupViewFull();
+  // Re-append continue button after re-render
+  appendFinalContinueBtn();
+}
+
+function clearTutOverlay(){
+  const ov=document.getElementById('tut-overlay');
+  ov.innerHTML=''; ov.style.pointerEvents='none';
+}
+
+function appendFinalContinueBtn(){
+  // Remove any existing first
+  const old=document.getElementById('final-cont-btn');
+  if(old)old.remove();
+  const contentDiv=document.getElementById('content');
+  if(!contentDiv)return;
+  const cont=document.createElement('div');
+  cont.id='final-cont-btn';
+  cont.style.cssText='margin-top:16px;padding:0;';
+  cont.innerHTML=`<div style="font-size:12px;color:var(--gray-500);text-align:center;margin-bottom:8px;line-height:1.5;">try tapping <strong>📅 propose dates</strong> above, then continue when ready</div>
+    <button onclick="nextStep()" style="width:100%;padding:13px;border-radius:var(--r-md);background:var(--purple);color:white;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-main);box-shadow:0 4px 16px rgba(124,111,247,.3);">I\'m ready → finish tutorial</button>`;
+  contentDiv.appendChild(cont);
+}
+
+function unlockFinalPage(){
+  // Just clear overlays and append the button — don't re-render (content already has the group view)
+  const ov=document.getElementById('tut-overlay');
+  ov.innerHTML=''; ov.style.pointerEvents='none';
+  const bw=document.getElementById('bubble-wrap');
+  bw.style.display='none'; bw.innerHTML='';
+  appendFinalContinueBtn();
+}
+
+function switchSort(v){
+  // Reorder members based on sort value to make it feel real
+  if(v==='overlap'){
+    // Put supers first, then coulds, then pass, then pending
+    groupFriends.sort((a,b)=>{
+      const order={super:0,could:1,pass:2,pending:3};
+      return (order[groupMemberVotes[a]]||3)-(order[groupMemberVotes[b]]||3);
+    });
+  } else if(v==='date'){
+    // Shuffle to simulate date sort
+    groupFriends.reverse();
+  } else {
+    // floated first - keep current order (user floated, so their event is always first)
+  }
+  renderGroupViewAddMember();
+  setTimeout(()=>{
+    showBubble({
+      text:`<strong>sorted by ${v==='floated'?'🌊 floated first':v==='overlap'?'🔥 most overlap':'📅 date/time'}</strong> — moves reorders so the most relevant plans bubble up`,
+      x:30,y:185,arrow:'up',
+    });
+    document.getElementById('tut-overlay').style.pointerEvents='none';
+  },150);
+}
+
+// ── INIT ───────────────────────────────────────────────────
+updateProgress();
+goToStep(0);
+</script>
+</body>
+</html>
